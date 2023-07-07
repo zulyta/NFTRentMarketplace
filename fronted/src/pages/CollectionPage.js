@@ -46,9 +46,24 @@ export default function Collection() {
     const { nftTknContract, rentCarContract } = getContracts();
 
     const provider = new BrowserProvider(window.ethereum);
-    const signer = provider.getSigner();
+    //const signer = provider.getSigner();
 
+    const addr = await nftTknContract.connect(signer).getAddress()
+    console.log(addr);
     form.reset();
+
+    /*/Approve Mi Primer Token
+  var btnApprove = document.getElementById("approveButton");
+  btnApprove.addEventListener("click", async function () {
+    
+    var txtApprove = document.getElementById("approveInput").value;
+    var amount = BigNumber.from(`${txtApprove}000000000000000000`);
+        
+    var tx = await miPrTokenContract.connect(signer).approve(pubSContract.address, amount);
+    return await tx.wait();
+  });*/
+
+
   };
 
   return (
