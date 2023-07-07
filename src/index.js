@@ -1,40 +1,35 @@
 import { BigNumber, Contract, providers, ethers, utils } from "ethers";
 
-//import usdcTknAbi from "../artifacts/contracts/USDCoin.sol/USDCoin.json";
+
+
 //import miPrimerTknAbi from "../artifacts/contracts/MiPrimerToken.sol/MiPrimerToken.json";
-//import publicSaleAbi from "../artifacts/contracts/PublicSale.sol/PublicSale.json"
-//import nftTknAbi from "../artifacts/contracts/NFT.sol/MiPrimerNft.json";
+
+import nftTknAbi from "../artifacts/contracts/NFT.sol/NFT.json";
+import rentCarTknAbi from "../artifacts/contracts/RentCar.sol/RentCar.json";
+
 
 window.ethers = ethers;
 
-var provider, signer, account;
-var pubSContractAdd;
-var usdcTkContract, miPrTokenContract, nftTknContract, pubSContract;
+let provider, signer, account;
+let pubSContractAdd;
+let usdcTkContract, miPrTokenContract, nftTknContract, rentCarContract;
 
 // REQUIRED
 // Conectar con metamask
-function initSCsGoerli() {
-  provider = new providers.Web3Provider(window.ethereum);
-
- var usdcAddress = "0x2Cca05C17c086024677B7b1259Fa5591f1F8Fd7a";
- var miPrTknAdd = "0x75f1a3B12DD48Ce41E159D700ee3b7a110699b74"; 
- pubSContractAdd = "0x66AeD8a4E73B726e5D15641b3Bc284a40C881B78";
-
-  usdcTkContract = new Contract(usdcAddress,usdcTknAbi.abi, provider);
-  miPrTokenContract = new Contract(miPrTknAdd,miPrimerTknAbi.abi,provider);
-  pubSContract = new Contract(pubSContractAdd,publicSaleAbi.abi,provider);
-}
-
 // OPTIONAL
 // No require conexion con Metamask
 // Usar JSON-RPC
 // Se pueden escuchar eventos de los contratos usando el provider con RPC
 function initSCsMumbai() {
-  var urlProvider = "https://polygon-mumbai.g.alchemy.com/v2/qsTcAHsFE1ZaO10FZfkCsXYdxL5cVax4";
+
+  const urlProvider = "https://polygon-mumbai.g.alchemy.com/v2/ImL76Y58Mvk3w8TxYK843RPMK7dNJ8RQ ";
   provider = new ethers.providers.JsonRpcProvider(urlProvider);
 
-  var nftAddress = "0x64E7BaF3bDcF89cb2f22C32Db1a1E22aC0400FAf";
+  const nftAddress = "0x42F5E1D2cA39eCD348001a9F28ac03D06ffFE9f4";
+  const rentcAddress = "0xCDAEb5445Fc45E5548097a18Dc3640A2D84Ef0A8";
   nftTknContract = new Contract(nftAddress,nftTknAbi.abi, provider);
+  rentCarContract = new Contract(rentcAddress,rentCarTknAbi.abi, provider)
+
 }
 
 function setUpListeners() {
@@ -51,13 +46,13 @@ function setUpListeners() {
       signer = provider.getSigner(account);
       window.signer = signer;
 
-      var balanceOfUsdc = await usdcTkContract.connect(signer).balanceOf(account);
-      var usdcBalance = document.getElementById("usdcBalance");
-      usdcBalance.textContent = balanceOfUsdc.toString();
+      //var balanceOfUsdc = await usdcTkContract.connect(signer).balanceOf(account);
+      //var usdcBalance = document.getElementById("usdcBalance");
+      //usdcBalance.textContent = balanceOfUsdc.toString();
 
-      var balanceOfTkn = await miPrTokenContract.connect(signer).balanceOf(account);
-      var miPrimerTknBalance = document.getElementById("miPrimerTknBalance");
-      miPrimerTknBalance.textContent = balanceOfTkn.toString();
+      //var balanceOfTkn = await miPrTokenContract.connect(signer).balanceOf(account);
+      //var miPrimerTknBalance = document.getElementById("miPrimerTknBalance");
+      //miPrimerTknBalance.textContent = balanceOfTkn.toString();
     }
   });
 
@@ -71,7 +66,7 @@ function setUpListeners() {
           chainId: utils.hexValue(Number("80001")),
           chainName: "Mumbai (Polygon) Testnet",
           nativeCurrency: {name:"MATIC",symbol:"MATIC", decimals:18},
-          rpcUrls: ["https://polygon-mumbai.g.alchemy.com/v2/qsTcAHsFE1ZaO10FZfkCsXYdxL5cVax4"],
+          rpcUrls: ["https://polygon-mumbai.g.alchemy.com/v2/ImL76Y58Mvk3w8TxYK843RPMK7dNJ8RQ"],
           blockExplorerUrls: ["https://mumbai.polygonscan.com/"]
         }]
       });
@@ -171,7 +166,7 @@ function setUpEventsContracts() {
 }
 
 async function setUp() {
-  initSCsGoerli();
+  
   initSCsMumbai();
   await setUpListeners();
   setUpEventsContracts();
