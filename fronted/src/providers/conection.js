@@ -1,12 +1,13 @@
-import { BigNumber, Contract, providers, ethers, utils } from "ethers";
 import nftTknAbi from "../contracts/NFT.sol/NFT.json";
 import rentCarTknAbi from "../contracts/RentCar.sol/RentCar.json";
+import { ethers, Contract } from "ethers";
+
 
 window.ethers = ethers;
 
-let provider, signer, account;
-let pubSContractAdd;
-let usdcTkContract, miPrTokenContract, nftTknContract, rentCarContract;
+let provider;
+
+let nftTknContract, rentCarContract;
 
 export function initSCsMumbai() {
   const urlProvider = "https://polygon-mumbai.g.alchemy.com/v2/ImL76Y58Mvk3w8TxYK843RPMK7dNJ8RQ ";

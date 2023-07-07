@@ -1,6 +1,8 @@
 {
     "conventionalCommits.scopes": [
         "fronted",
-        "Smart Contract"
+        "Smart Contract",
+        "update SC y collection ",
+        "update SmartContract "
     ]
 }

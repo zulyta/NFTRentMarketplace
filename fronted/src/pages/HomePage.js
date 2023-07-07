@@ -1,6 +1,6 @@
 import { initSCsMumbai } from '../providers/conection'
-// import { BigNumber, Contract, providers, ethers, utils } from "ethers";
 import { useEffect, useState } from "react";
+import { AbstractProvider } from "ethers";
 
 export default function Home() {
 
@@ -49,9 +49,9 @@ export default function Home() {
     console.log("Conectado ", accounts[0]);
     setCurrentAccount(accounts[0]);
 
-    //provider = new providers.Web3Provider(ethereum);
-    //signer = provider.getSigner(account);
-    //window.signer = signer;
+    let provider = new AbstractProvider.Web3Provider(ethereum);
+    let signer = provider.getSigner(accounts[0]);
+    window.signer = signer;
     
     } catch (error) {
     console.log(error)
