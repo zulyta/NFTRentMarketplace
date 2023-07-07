@@ -15,11 +15,11 @@ var BURNER_ROLE = getRole("BURNER_ROLE");
 
 async function deployMumbai() {
   var relayerAddress = "0xfcB8555bB06b13784E7861ddC9587B9920AF8026";
-  var nftContractAddress = "0x42F5E1D2cA39eCD348001a9F28ac03D06ffFE9f4";
+  var nftContractAddress = "0xAb68c60C5d74720c6456319F9132E6f47d22D7d3";
   var marketplaceOwner = "0x860cb92096D13b34E6d5638f68d6F1B6be77CfC9";
-  var commissionPercentage = 10;
+  //var commissionPercentage = 10;
 
-  var rentCarContract = await deploySC("RentCar", [nftContractAddress, marketplaceOwner, commissionPercentage]);
+  var rentCarContract = await deploySC("RentCar", [nftContractAddress, marketplaceOwner]);
   var implementation = await printAddress("RentCar", rentCarContract.address); 
 
 
@@ -33,7 +33,7 @@ await verify(implementation, "RentCar", []);
 async function upgrade() {
 
 
-rentCarContract = await upgradeSC("RentCar_v2",rentCarContract.address);
+rentCarContract = await upgradeSC("RentCar_v2",[rentCarContract.address]);
 var implementation = await printAddress("RentCar_v2", rentCarContract.address);
 
 await verify(implementation, "RentCar_v2", []);

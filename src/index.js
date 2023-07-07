@@ -1,7 +1,5 @@
 import { BigNumber, Contract, providers, ethers, utils } from "ethers";
 
-
-
 //import miPrimerTknAbi from "../artifacts/contracts/MiPrimerToken.sol/MiPrimerToken.json";
 
 import nftTknAbi from "../artifacts/contracts/NFT.sol/NFT.json";
@@ -25,8 +23,8 @@ function initSCsMumbai() {
   const urlProvider = "https://polygon-mumbai.g.alchemy.com/v2/ImL76Y58Mvk3w8TxYK843RPMK7dNJ8RQ ";
   provider = new ethers.providers.JsonRpcProvider(urlProvider);
 
-  const nftAddress = "0x42F5E1D2cA39eCD348001a9F28ac03D06ffFE9f4";
-  const rentcAddress = "0xCDAEb5445Fc45E5548097a18Dc3640A2D84Ef0A8";
+  const nftAddress = "0xAb68c60C5d74720c6456319F9132E6f47d22D7d3";
+  const rentcAddress = "0xcdCC6a394d8f30DC43Be1Bc9aE9f42D98d2c8d13";
   nftTknContract = new Contract(nftAddress,nftTknAbi.abi, provider);
   rentCarContract = new Contract(rentcAddress,rentCarTknAbi.abi, provider)
 

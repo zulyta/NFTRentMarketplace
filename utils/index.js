@@ -1,8 +1,8 @@
 const hre = require("hardhat");
 //const usdcTknAbi = require("../artifacts/contracts/USDCoin.sol/USDCoin.json");
-const miPrimerTknAbi = require("../artifacts/contracts/NFT.sol/NFT.json");//artifacts\contracts\NFT.sol\Strings.json
+const nftTknAbi = require("../artifacts/contracts/NFT.sol/NFT.json");//D:\repo.visualcode\NFTRentMarketplace\artifacts\contracts\RentCar.sol\RentCar.json
 //const publicSaleAbi = require("../artifacts/contracts/artifacts\contracts\Marketplace.sol\Marketplace.json");
-const nftTknAbi = require("../artifacts/contracts/RentCar.sol/RentCar.json");
+const rentCarTknAbi = require("../artifacts/contracts/RentCar.sol/RentCar.json");
 
 const gcf = hre.ethers.getContractFactory;
 const dp = hre.upgrades.deployProxy;

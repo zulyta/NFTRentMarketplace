@@ -47,7 +47,7 @@ contract NFT is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable, A
     function _authorizeUpgrade(address) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
     // Funcion crea un nuevo token NFT y lo asigna a una direccion to
-    function safeMint(address to, string memory uri, string memory nameAuto, string memory features, uint256 price, uint256 guarantee, uint256 interestRate)
+    function safeMintOwner(address to, string memory uri, string memory nameAuto, string memory features, uint256 price, uint256 guarantee, uint256 interestRate)
         public
         onlyRole(MINTER_ROLE)
     {
@@ -62,10 +62,23 @@ contract NFT is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable, A
         _totalSupply++;
     }
 
+      //funcion para crear otro NFT para el que el arrendatario despues de crear un alquiler; 
+    function safeMintRental( address to, string memory uri) 
+        public
+        onlyRole(MINTER_ROLE)
+        {
+        uint256 tokenId = _tokenIdCounter.current();
+
+        _safeMint(to, tokenId);
+        _setTokenURI(tokenId, uri);
+        _tokenIdCounter.increment();
+        _totalSupply++;
+         }
+
       //La funcion getCar permite obtener los detalles de un automovil NFT existente
       //recibe un indice y devuelve el identificador del token y sus atributos.  
     function getCar(uint256 index) public view returns (uint256 tokenId, string memory nameAuto, string memory features, uint256 price, uint256 guarantee, uint256 interestRate) {
-        require(index < cars.length, "Invalid car index");
+        require(index < cars.length, "Index de carro invalido");
         Car storage car = cars[index];
         return (car.tokenId, car.nameAuto, car.features, car.price, car.guarantee, car.interestRate);
     }
@@ -78,6 +91,18 @@ contract NFT is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable, A
     //Se utiliza para quemar un token
     function _burn(uint256 tokenId) internal override(ERC721Upgradeable, ERC721URIStorageUpgradeable) {
         super._burn(tokenId);
+    }
+
+    function burnOwnerToken(uint256 tokenId) external onlyRole(MINTER_ROLE) {
+    address owner = ownerOf(tokenId);
+    require(owner != address(0), "Propietario de token invalido");
+    _burn(tokenId);
+    }
+
+    function burnRenterToken(uint256 tokenId) external onlyRole(MINTER_ROLE) {
+        address renter = ownerOf(tokenId);
+        require(renter != address(0), "Arrendatario de token invalido");
+        _burn(tokenId);
     }
 
     //Devuelve la URI de un token NFT especifico en funcion de su identidad

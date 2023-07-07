@@ -41,7 +41,7 @@ await verify(implementation, "NFT_v2", []);
 }
 
 deployMumbai()
-//deployGoerli()
+
   .catch((error) => {
     console.error(error);
     process.exitCode = 1;
