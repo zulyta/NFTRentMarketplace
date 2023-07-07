@@ -1,32 +1,24 @@
 /* src/App.js */
-import './App.css'
-import Home from './pages/HomePage'
-import Collection from './pages/CollectionPage'
-import Nav from './componets/Nav'
+import "./App.css";
+import Nav from "./componets/Nav";
+import { createContext } from "react";
+import { getContracts } from "./configContracts";
+import { router } from "./router";
+import { RouterProvider } from "react-router-dom";
 
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+export const ContractsContext = createContext();
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home/>,
-  },
-  {
-    path: "/collection",
-    element: <Collection/>,
-  }
-]);
+const contracts = getContracts();
 
 function App() {
   return (
-    <div>
-      <Nav/>
-      <RouterProvider router={router} />
-    </div>
+    <>
+      <ContractsContext.Provider value={contracts}>
+        <Nav />
+        <RouterProvider router={router} />
+      </ContractsContext.Provider>
+    </>
   );
 }
 
-export default App
+export default App;

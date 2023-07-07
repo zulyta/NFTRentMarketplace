@@ -11,7 +11,11 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     using SafeMathUpgradeable for uint256;
  //RENTER_ROLE representa el rol del arrendatario
     bytes32 public constant RENTER_ROLE = keccak256("RENTER_ROLE");
-//se declaran variables privadas para almacenar instacia del SC NFT, Owner Marketplace, % de comision
+
+    //Crea dos variables la primera es un contador para asignar indentificadores
+    //y la segunda guarda el numero total de tokens NFT
+    
+
     NFT private nftContract;
     address private marketplaceOwner;
     uint256 private commissionPercentage;
@@ -31,6 +35,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     Rental[] private rentals;
     mapping(address => uint256[]) private renterRentals;
     mapping(address => uint256[]) private carRentals;
+    //mapping(uint256 => bool) private carAvailability; // Variable para rastrear la disponibilidad de los automóviles
 
     //se defien eventos para la creacion de alquileres y devolucion de los auto
     event RentalCreated(
@@ -50,7 +55,8 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
 
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(RENTER_ROLE, msg.sender);
-
+        
+    
         nftContract = NFT(_nftContractAddress);
         marketplaceOwner = _marketplaceOwner;
         commissionPercentage = 10; //10% de comision 
@@ -71,9 +77,9 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
         uint256 startDate,
         uint256 endDate
     ) external payable onlyRole(RENTER_ROLE) {
-        require(startDate < endDate, "Invalid rental dates");
-        require(tokenIdExists(tokenId), "Token ID does not exist");
-        require(isCarAvailable(carIndex), "Car is not available for rental");
+        require(startDate < endDate, "Datos invalidos");
+        require(tokenIdExists(tokenId), "Token ID no existe");
+        require(isCarAvailable(carIndex), "Carro no disponible para alquiler");
 
         uint256 rentalId = rentals.length;
         Rental storage rental = rentals.push();
@@ -92,7 +98,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
         emit RentalCreated(msg.sender, rentalId, carIndex, tokenId, startDate, endDate);
 
         uint256 rentalCost = calculateRentalCost(rentalId);
-        require(msg.value >= rentalCost, "Insufficient funds");
+        require(msg.value >= rentalCost, "Insufficientes fondos");
 
         uint256 commission = rentalCost.mul(commissionPercentage).div(100);
         uint256 amountToOwner = rentalCost.sub(commission);
@@ -101,34 +107,44 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
         payable(nftContract.ownerOf(tokenId)).transfer(amountToOwner);
     }
 
+   
+
     //permite al renter devolver el auto, este debe ingresar el id 
     //del auto a devolver, luego se verifica que el id sea valido, para marcar como inactivo y disponible, finalmente el propietario transfiere la garantia
     function returnRental(uint256 rentalId) external onlyRole(RENTER_ROLE) {
-        require(rentalId < rentals.length, "Invalid rental ID");
+        require(rentalId < rentals.length, "ID de alquiler invalido");
         Rental storage rental = rentals[rentalId];
-        require(rental.renter == msg.sender, "Not the renter of this rental");
-        require(rental.active, "Rental is not active");
-        require(rental.endDate < block.timestamp, "Rental has not ended yet");
-
+        require(rental.renter == msg.sender, "No es el arrendatario de este alquiler");
+        require(rental.active, "El alquiler no esta activo");
+        require(rental.endDate < block.timestamp, "El alquiler aun no ha finalizado");
         rental.active = false;
-        rental.returned = true;
+        rental.returned = false;
+        
     //Emite el evento RentalRetur para nofificar la finalizacion del alquiler
         emit RentalReturned(msg.sender, rentalId, rental.endDate);
 
          uint256 returnAmount = calculateReturnGarante(rentalId);
-        require(returnAmount > 0, "No return amount to be refunded");
+        require(returnAmount > 0, "No hay monto de devolucion para reembolsar");
 
         address carOwner = nftContract.ownerOf(rental.tokenId);
-        require(carOwner != address(0), "Invalid car owner");
+        require(carOwner != address(0), "Propietario de auto invalido");
         payable(msg.sender).transfer(returnAmount); // Devolución de la garantía al arrendatario
 
+    //Marcar el carro como disponible nuevamente 
+        rental.active = true;
+        rental.returned = true;
+       // carAvailability[rental.carIndex] = true;
+
+    // Quemar el NFT de alquiler
+        nftContract.burnOwnerToken(rental.tokenId); // Quemar el token del propietario del auto
+        nftContract.burnRenterToken(rental.tokenId); // Quemar el token del arrendatario
     }
     /*Esta funcion calcula el costo de un alquiler en funcion de su ID de alquiler, luego
     Luego obtiene el precio, la garantia y el interes definido por el propietario asociado al 
     SC NFT*/
 
     function calculateRentalCost(uint256 rentalId) public view returns (uint256) {
-        require(rentalId < rentals.length, "Invalid rental ID");
+        require(rentalId < rentals.length, "ID de alquiler invalido");
         Rental storage rental = rentals[rentalId];
         (, , , , uint256 price, uint256 guarantee) = nftContract.getCar(rental.carIndex);
 
@@ -141,7 +157,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     //Funcion que calcula monto de devolucion 
 
     function calculateReturnGarante(uint256 rentalId) public view returns (uint256) {
-    require(rentalId < rentals.length, "Invalid rental ID");
+    require(rentalId < rentals.length, "ID de alquiler invalido");
     Rental storage rental = rentals[rentalId];
     (, , , , uint256 guarantee, uint256 interestRate) = nftContract.getCar(rental.carIndex);
 
@@ -198,7 +214,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
             bool returned
         )
     {
-        require(rentalId < rentals.length, "Invalid rental ID");
+        require(rentalId < rentals.length, "ID de alquiler invalido");
         Rental storage rental = rentals[rentalId];
         return (
             rental.carIndex,
