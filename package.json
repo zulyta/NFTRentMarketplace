@@ -1,7 +1,7 @@
 {
   "name": "hardhat-project",
   "scripts": {
-    "start": "npm start --prefix fronted"
+    "start": "npm start --prefix frontend"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-network-helpers": "^1.0.7",
