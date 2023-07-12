@@ -10,7 +10,7 @@
         </li>
       </ul>
       <button class="btn-connect-wallet" @click="btnConnect()">
-        {{ checkIfWalletIsConnected ? currentAccount : 'Conectar wallet' }}
+        {{ btnText() }}
       </button>
     </nav>
   </header>
@@ -22,13 +22,11 @@ const {
   checkIfWalletIsConnected,
   connectWallet,
   currentAccount,
-  getNFTs,
 } = useEthers();
 
 onMounted(() => {
   checkIfMetaMaskIsInstalled();
   checkIfWalletIsConnected();
-  getNFTs();
 });
 
 const urls = [
@@ -38,5 +36,17 @@ const urls = [
 
 function btnConnect() {
   checkIfWalletIsConnected ? null : connectWallet();
+}
+
+function btnText() {
+  var text = 'Conectar wallet';
+
+  if (checkIfWalletIsConnected && currentAccount.value) {
+    const prefix = currentAccount.value.slice(0, 4);
+    const suffix = currentAccount.value.slice(-4);
+    text = `${prefix}...${suffix}`;
+  }
+
+  return text;
 }
 </script>

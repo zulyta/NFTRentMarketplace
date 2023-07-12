@@ -42,13 +42,85 @@
     @apply h-12 object-cover;
   }
 
-  .btn-connect-wallet {
+  [class^="btn-"] {
     @apply
-      bg-indigo-600
       text-white
       rounded-md
       px-3
       py-2
-      text-center;
+      text-center
+      whitespace-nowrap;
   }
+
+  .btn-connect-wallet {
+    @apply
+      bg-indigo-600
+  }
+
+  .nft-list {
+    @apply
+      my-6
+      grid
+      grid-cols-1
+      gap-x-6
+      gap-y-10
+      auto-rows-auto
+      sm:grid-cols-2
+      lg:grid-cols-4
+      xl:gap-x-8
+  }
+
+  .nft-item {
+    @apply
+      w-full
+      h-full
+      flex
+      flex-col
+      rounded-md
+      bg-white
+      drop-shadow-lg
+      overflow-hidden
+      transition
+      duration-200
+      hover:drop-shadow-xl
+  }
+
+  .nft-image {
+    @apply
+      lg:h-80
+      overflow-hidden;
+  }
+
+  .nft-item:hover img {
+    @apply
+      transition
+      ease-in-out
+      duration-300
+      scale-125
+      rotate-6;
+  }
+
+  .nft-image img {
+    @apply
+      w-full
+      h-full
+      transition
+      ease-in-out
+      object-cover;
+  }
+
+  .nft-footer {
+    @apply
+      p-4;
+  }
+
+  .btn-lend-nft {
+    @apply
+      bg-orange-600
+      w-full
+      mt-2
+      font-semibold
+      hover:bg-orange-700;
+  }
+
 }
