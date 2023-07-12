@@ -1,3 +1,6 @@
+// ALQUILER DE NFT
+
+//
 /*import { useState } from 'react'
 import { create } from 'ipfs-http-client'
 import { Buffer } from 'buffer'

@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .container {
+    @apply mx-auto px-4;
+  }
+
+  .header {
+    @apply bg-gray-600;
+  }
+
+  .header .container {
+    @apply
+      flex
+      items-center
+      flex-row;
+  }
+
+  .header .logo {
+    @apply
+      text-lg
+      w-40
+      text-white
+      uppercase
+      font-bold;
+  }
+
+  .header ul {
+    @apply
+      flex
+      justify-end
+      space-x-4
+      py-4
+      w-full;
+  }
+
+  .header li a {
+    @apply bg-gray-900 text-white rounded-md px-3 py-2 block;
+  }
+
+  .logo img {
+    @apply h-12 object-cover;
+  }
+}

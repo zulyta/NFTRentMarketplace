@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { BrowserProvider } from "ethers";
-import { ContractsContext } from "../App";
+import { useEffect, useState } from 'react';
+import { BrowserProvider } from 'ethers';
+import { ContractsContext } from '../App';
 
 export default function Home() {
-  const [currentAccount, setCurrentAccount] = useState("");
-  const [balance, setBalance] = useState("");
+  const [currentAccount, setCurrentAccount] = useState('');
+  const [balance, setBalance] = useState('');
 
   const checkIfWalletIsConnected = async () => {
     /*
@@ -13,21 +13,21 @@ export default function Home() {
     try {
       const { ethereum } = window;
       if (!ethereum) {
-        console.log("Asegúrate de que tienes Metamask!");
+        console.log('Asegúrate de que tienes Metamask!');
         return;
       } else {
-        console.log("Tenemos el objeto ethereum", ethereum);
+        console.log('Tenemos el objeto ethereum', ethereum);
       }
       /*
        * Comprobar que estamos autorizados para acceder a la cartera del usuario
        */
-      const accounts = await ethereum.request({ method: "eth_accounts" });
+      const accounts = await ethereum.request({ method: 'eth_accounts' });
       if (accounts.length !== 0) {
         const account = accounts[0];
-        console.log("Cartera autorizada encontrada:", account);
+        console.log('Cartera autorizada encontrada:', account);
         setCurrentAccount(account);
       } else {
-        console.log("No se encontró ninguna cuenta autorizada");
+        console.log('No se encontró ninguna cuenta autorizada');
       }
     } catch (error) {
       console.log(error);
@@ -41,14 +41,14 @@ export default function Home() {
     try {
       const { ethereum } = window;
       if (!ethereum) {
-        alert("Descarga Metamask");
+        alert('Descarga Metamask');
         return;
       }
       const accounts = await ethereum.request({
-        method: "eth_requestAccounts",
+        method: 'eth_requestAccounts',
       });
 
-      console.log("Conectado ", accounts[0]);
+      console.log('Conectado ', accounts[0]);
       setCurrentAccount(accounts[0]);
     } catch (error) {
       console.log(error);
@@ -57,7 +57,7 @@ export default function Home() {
 
   const getBalance = async () => {
     const provider = new BrowserProvider(window.ethereum);
-    const signer = provider.getSigner();
+    const signer = provider.getSigner(accounts[0]);
     window.signer = signer;
     const address = (await signer).getAddress();
     const balance = await provider.getBalance(address);
@@ -76,16 +76,22 @@ export default function Home() {
       {(contracts) => {
         console.log(contracts);
         return (
-          <div className="App text-center mt-4">
-            <h1 className="text-2xl font-bold text-gray-800">
+          <div className='App text-center mt-4'>
+            <h1 className='text-2xl font-bold text-gray-800'>
               Conecta con tu Wallet
             </h1>
-            <p>Direcion: <span className="text-base text-gray-600">{currentAccount}</span></p>
-            <p>Balance: <span className="text-base text-gray-600">{balance}</span></p>
+            <p>
+              Direcion:{' '}
+              <span className='text-base text-gray-600'>{currentAccount}</span>
+            </p>
+            <p>
+              Balance:{' '}
+              <span className='text-base text-gray-600'>{balance}</span>
+            </p>
 
             {!currentAccount && (
               <button
-                className="waveButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                className='waveButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
                 onClick={connectWallet}
               >
                 Conecta tu cartera
@@ -93,7 +99,7 @@ export default function Home() {
             )}
             {currentAccount && (
               <button
-                className="waveButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                className='waveButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
                 onClick={getBalance}
               >
                 Obtener Balance
