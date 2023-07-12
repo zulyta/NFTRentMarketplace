@@ -1,8 +1,7 @@
 @tailwind base;
-@tailwind components;
 @tailwind utilities;
 
-@layer components {
+@layer base {
   .container {
     @apply mx-auto px-4;
   }
@@ -21,7 +20,7 @@
   .header .logo {
     @apply
       text-lg
-      w-40
+      w-52
       text-white
       uppercase
       font-bold;
@@ -30,7 +29,6 @@
   .header ul {
     @apply
       flex
-      justify-end
       space-x-4
       py-4
       w-full;
@@ -42,5 +40,15 @@
 
   .logo img {
     @apply h-12 object-cover;
+  }
+
+  .btn-connect-wallet {
+    @apply
+      bg-indigo-600
+      text-white
+      rounded-md
+      px-3
+      py-2
+      text-center;
   }
 }
