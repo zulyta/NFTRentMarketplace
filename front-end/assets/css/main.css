@@ -35,7 +35,14 @@
   }
 
   .header li a {
-    @apply bg-gray-900 text-white rounded-md px-3 py-2 block;
+    @apply
+    bg-gray-700
+    text-white
+      rounded-md
+      px-3
+      py-2
+      block
+      hover:bg-gray-900;
   }
 
   .logo img {
@@ -114,13 +121,9 @@
       p-4;
   }
 
-  .btn-lend-nft {
+  .nft-footer button {
     @apply
-      bg-orange-600
-      w-full
-      mt-2
-      font-semibold
-      hover:bg-orange-700;
+      mt-4
   }
 
 }
