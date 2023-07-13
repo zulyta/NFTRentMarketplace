@@ -34,11 +34,11 @@ const urls = [
   { name: 'Perfil', path: '/profile' },
 ];
 
-function btnConnect() {
+const btnConnect = () => {
   checkIfWalletIsConnected ? null : connectWallet();
-}
+};
 
-function btnText() {
+const btnText = () => {
   var text = 'Conectar wallet';
 
   if (checkIfWalletIsConnected && currentAccount.value) {
@@ -48,5 +48,5 @@ function btnText() {
   }
 
   return text;
-}
+};
 </script>

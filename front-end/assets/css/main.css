@@ -126,4 +126,38 @@
       mt-4
   }
 
+  .modal-content {
+    @apply
+      p-4;
+  }
+
+  .nft-detail {
+    @apply
+      flex
+      mb-4;
+  }
+
+  .nft-detail h3 {
+    @apply
+      text-lg
+      mb-4;
+  }
+
+  .nft-detail ul {
+    @apply
+      ml-4;
+  }
+
+  .nft-inputs {
+    @apply
+      flex
+      gap-x-4
+      my-4;
+  }
+  
+  .nft-inputs .input {
+    @apply
+      w-full;
+  }
+
 }

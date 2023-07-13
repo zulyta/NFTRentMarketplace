@@ -73,17 +73,12 @@ export default defineNuxtPlugin({
           'https://polygon-mumbai.g.alchemy.com/v2/qsTcAHsFE1ZaO10FZfkCsXYdxL5cVax4'
         );
         const nftTokenAddress = '0xAb68c60C5d74720c6456319F9132E6f47d22D7d3';
-        // const rentCarAddress = '0xcdCC6a394d8f30DC43Be1Bc9aE9f42D98d2c8d13';
         const nftTokenContract = new ethers.Contract(
           nftTokenAddress,
           nftTknAbi.abi,
           provider
         );
-        // const rentCarContract = new ethers.Contract(
-        //   rentCarAddress,
-        //   rentCarTknAbi.abi,
-        //   provider
-        // );
+
         const totalSupply = await nftTokenContract.totalSupply();
         for (let i = 0; i < totalSupply; i++) {
           const tokenURI = await nftTokenContract.tokenURI(i);
@@ -93,15 +88,27 @@ export default defineNuxtPlugin({
             image: tokenURI,
             nameAuto: data.nameAuto,
             features: data.features,
-            price: ethers.formatEther(data.price),
-            guarantee: ethers.formatEther(data.guarantee),
-            interestRate: ethers.formatEther(data.interestRate),
+            price: data.price,
+            guarantee: data.guarantee,
+            interestRate: data.interestRate,
           };
           nftList.value.push(object);
         }
       } catch (error) {
         console.log(error);
       }
+    }
+
+    async function rentCar(tokenId) {
+      const provider = new ethers.JsonRpcProvider(
+        'https://polygon-mumbai.g.alchemy.com/v2/qsTcAHsFE1ZaO10FZfkCsXYdxL5cVax4'
+      );
+      const rentCarAddress = '0xcdCC6a394d8f30DC43Be1Bc9aE9f42D98d2c8d13';
+      const rentCarContract = new ethers.Contract(
+        rentCarAddress,
+        rentCarTknAbi.abi,
+        provider
+      );
     }
 
     const plugin = {
