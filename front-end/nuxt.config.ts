@@ -10,7 +10,24 @@ export default defineNuxtConfig({
   },
   imports: {
     dirs: [
-      // Scan top-level modules
-      'composables',]
+      'composables',
+    ]
+  },
+  modules: [
+    '@nuxthq/ui'
+  ],
+  colorMode: {
+    preference: 'light',
+    fallback: 'light',
+    classPrefix: '',
+  },
+  tailwindcss: {
+    cssPath: '~/assets/css/main.css',
+    configPath: 'tailwind.config',
+    exposeConfig: false,
+    exposeLevel: 2,
+    config: {},
+    injectPosition: 'first',
+    viewer: true,
   }
 })
