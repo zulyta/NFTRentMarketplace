@@ -28,6 +28,7 @@ contract NFT is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable, A
         uint256 price;
         uint256 guarantee;
         uint256 interestRate;
+        
     }
 
     //Declara la matriz privada que almacenara los NFT de autos creados
@@ -49,12 +50,11 @@ contract NFT is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable, A
     // Funcion crea un nuevo token NFT y lo asigna a una direccion to
     function safeMintOwner(address to, string memory uri, string memory nameAuto, string memory features, uint256 price, uint256 guarantee, uint256 interestRate)
         public
-        onlyRole(MINTER_ROLE)
     {
         uint256 tokenId = _tokenIdCounter.current();
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
-        cars.push(Car(tokenId, nameAuto, features, price, guarantee, interestRate));
+         cars.push(Car(tokenId, nameAuto, features, price, guarantee, interestRate));
         //incrementamos el contador para obtener un nuevo identificador
         //utiliza safemint para crear el token NFT y asignarlo a la direccion to
         //el metadato del token se establece utilizando _setTokenURI con la ubicacion uri
@@ -65,7 +65,7 @@ contract NFT is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable, A
       //funcion para crear otro NFT para el que el arrendatario despues de crear un alquiler; 
     function safeMintRental( address to, string memory uri) 
         public
-        onlyRole(MINTER_ROLE)
+    
         {
         uint256 tokenId = _tokenIdCounter.current();
 
@@ -77,10 +77,15 @@ contract NFT is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable, A
 
       //La funcion getCar permite obtener los detalles de un automovil NFT existente
       //recibe un indice y devuelve el identificador del token y sus atributos.  
-    function getCar(uint256 index) public view returns (uint256 tokenId, string memory nameAuto, string memory features, uint256 price, uint256 guarantee, uint256 interestRate) {
+      //getCars 
+     function getCar(uint256 index) public view returns (uint256 tokenId, string memory nameAuto, string memory features, uint256 price, uint256 guarantee, uint256 interestRate) {
         require(index < cars.length, "Index de carro invalido");
         Car storage car = cars[index];
         return (car.tokenId, car.nameAuto, car.features, car.price, car.guarantee, car.interestRate);
+    }
+
+    function getCars() public view returns (Car[] memory) {
+        return cars;
     }
 
     //devuelve el numero total de token NFT creados, alamcenado en _totalSupply
@@ -93,13 +98,13 @@ contract NFT is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable, A
         super._burn(tokenId);
     }
 
-    function burnOwnerToken(uint256 tokenId) external onlyRole(MINTER_ROLE) {
+    function burnOwnerToken(uint256 tokenId) external {
     address owner = ownerOf(tokenId);
     require(owner != address(0), "Propietario de token invalido");
     _burn(tokenId);
     }
 
-    function burnRenterToken(uint256 tokenId) external onlyRole(MINTER_ROLE) {
+    function burnRenterToken(uint256 tokenId) external {
         address renter = ownerOf(tokenId);
         require(renter != address(0), "Arrendatario de token invalido");
         _burn(tokenId);

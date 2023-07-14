@@ -54,7 +54,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
         __UUPSUpgradeable_init();
 
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(RENTER_ROLE, msg.sender);
+        //_setupRole(RENTER_ROLE, msg.sender);
         
     
         nftContract = NFT(_nftContractAddress);
@@ -76,7 +76,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
         uint256 tokenId,
         uint256 startDate,
         uint256 endDate
-    ) external payable onlyRole(RENTER_ROLE) {
+    ) external payable  {
         require(startDate < endDate, "Datos invalidos");
         require(tokenIdExists(tokenId), "Token ID no existe");
         require(isCarAvailable(carIndex), "Carro no disponible para alquiler");
@@ -148,7 +148,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
         Rental storage rental = rentals[rentalId];
         (, , , , uint256 price, uint256 guarantee) = nftContract.getCar(rental.carIndex);
 
-        uint256 rentalDuration = rental.endDate.sub(rental.startDate);
+        uint256 rentalDuration = rental.endDate.sub(rental.startDate).div(86400);
         uint256 totalCost = price.mul(rentalDuration).add(guarantee);
 
         return totalCost;
@@ -164,14 +164,14 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     if (rental.returned && rental.endDate >= block.timestamp) {
         return guarantee; // Devolución de garantía completa si se devuelve a tiempo y sin daños
     } else if (rental.endDate < block.timestamp && !rental.returned) {
-        uint256 lateDays = block.timestamp.sub(rental.endDate);
+        uint256 lateDays = block.timestamp.sub(rental.endDate).div(86400);
         uint256 lateInterest = lateDays.mul(interestRate);
         uint256 deduction = guarantee.sub(lateInterest); // Cálculo de la deducción basada en el interés y la garantía
         return deduction; // Devolución de garantía con deducción por días de retraso
     } else {
         return 0; // No hay devolución de garantía si aún no se ha cumplido la fecha de finalización
     }
-}
+    }
 
 
     /*/Verifica si un token NFT con el ID proporcionado existe, utiliza la funcion totalSupply del SC NFT para 
@@ -186,16 +186,24 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     el rango de fecha ingresado por el arrendatario */
 
     function isCarAvailable(uint256 carIndex) private view returns (bool) {
-        uint256[] memory carRentalsList = carRentals[nftContract.ownerOf(carIndex)];
-        for (uint256 i = 0; i < carRentalsList.length; i++) {
-            Rental storage rental = rentals[carRentalsList[i]];
-            if (rental.active && rental.carIndex == carIndex) {
-                if (block.timestamp >= rental.startDate && block.timestamp <= rental.endDate) {
-                    return false;
-                }
+    uint256[] memory carRentalsList = carRentals[nftContract.ownerOf(carIndex)];
+    uint256 currentTimestamp = block.timestamp;
+
+    for (uint256 i = 0; i < carRentalsList.length; i++) {
+        Rental storage rental = rentals[carRentalsList[i]];
+
+        if (rental.active && rental.carIndex == carIndex) {
+            if (
+                (currentTimestamp >= rental.startDate && currentTimestamp <= rental.endDate) ||
+                (rental.startDate >= currentTimestamp && rental.startDate <= currentTimestamp) ||
+                (rental.startDate <= currentTimestamp && rental.endDate >= currentTimestamp)
+            ) {
+                return false;
             }
         }
-        return true;
+    }
+
+    return true;
     }
 
     /* esta funcion devuelve la informacion de un alquiler dado, verifica 
@@ -226,7 +234,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
             rental.returned
         );
     }
-    //devuelve el indice del arrendatario, como una matres de alquileres correspondientes.
+    //devuelve el indice del arrendatario, como una matris de alquileres correspondientes.
     function getRenterRentals(address renter) public view returns (uint256[] memory) {
         return renterRentals[renter];
     }

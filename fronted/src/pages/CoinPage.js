@@ -1,55 +1,29 @@
-/*import { useState } from 'react'
-import { create } from 'ipfs-http-client'
-import { Buffer } from 'buffer'
+//import { useEffect, useState } from "react";
+//import { BrowserProvider } from "ethers";
+import { createRental,calculateRentalCost} from "../providers/RentService";
+//import { getCurrentAccount } from "../contracts";
 
- configure Infura auth settings 
-const projectId = "2S7zYY8TR6gbg7ScqVdwgQkDdTw"
-const projectSecret = "09b5890aa31decd755045cb08a7cce49"
-const auth = 'Basic ' + Buffer.from(projectId + ':' + projectSecret).toString('base64');
+export default function CoinPage() {
+ 
+ 
 
-create the client 
-const client = create({
-  host: 'ipfs.infura.io',
-  port: 5001,
-  protocol: 'https',
-  headers: {
-      authorization: auth,
-  },
-})
+   
+  return (
+    <div className="App text-center mt-4">
+      
+        <button
+          className="waveButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={createRental}
+        > realizar transferencia
+          
+        </button>
+        <button
+          className="waveButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={calculateRentalCost}
+        > Estimado de renta
+          
+        </button>
 
-export default function Home() {
-    const [fileUrl, updateFileUrl] = useState(``)
-    async function onChange(e) {
-      const file = e.target.files[0]
-      try {
-        const added = await client.add(file)
-        const url = `https://infura-ipfs.io/ipfs/${added.path}`
-        updateFileUrl(url)
-        console.log("IPFS URI: ", url)
-      } catch (error) {
-        console.log('Error uploading file: ', error)
-      }  
-    }
-
-
-    return (
-        <div className="App">
-     
-      <h1>IPFS Example</h1>
-      <input
-        type="file"
-        onChange={onChange}
-      />
-      {
-        fileUrl && (
-          <div>
-            <img src={fileUrl} width="600px" />
-            <a href={fileUrl} target="_blank">{fileUrl}</a>
-          </div>
-        )
-      }
     </div>
-    )
+  );
 }
-
-    */

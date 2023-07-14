@@ -1,8 +1,8 @@
 // import { create } from 'ipfs-http-client'
 import { useState } from "react";
 import { create as ipfsHttpClient } from "ipfs-http-client";
-import { getContracts } from "../configContracts";
-import { BrowserProvider } from "ethers";
+import { safeMintOwner } from "../providers/NftService";
+import { getCurrentAccount } from "../contracts";
 
 const projectId = "2S7zYY8TR6gbg7ScqVdwgQkDdTw";
 const projectSecretKey = "09b5890aa31decd755045cb08a7cce49";
@@ -18,7 +18,7 @@ export default function Collection() {
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
-    if(!file) return setImage(null)
+    if (!file) return setImage(null);
     const imageURL = URL.createObjectURL(file);
     setImage(imageURL);
   };
@@ -29,6 +29,7 @@ export default function Collection() {
       authorization,
     },
   });
+
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     const form = event.target;
@@ -41,29 +42,27 @@ export default function Collection() {
     const file = files[0];
     // upload files
     const result = await ipfs.add(file);
-    console.log(result);
-    // Llamar al contrato para crear el token
-    const { nftTknContract, rentCarContract } = getContracts();
 
-    const provider = new BrowserProvider(window.ethereum);
-    //const signer = provider.getSigner();
+    if (!result || !result.path) {
+      return alert("File upload failed");
+    }
 
-    const addr = await nftTknContract.connect(signer).getAddress()
-    console.log(addr);
-    form.reset();
-
-    /*/Approve Mi Primer Token
-  var btnApprove = document.getElementById("approveButton");
-  btnApprove.addEventListener("click", async function () {
-    
-    var txtApprove = document.getElementById("approveInput").value;
-    var amount = BigNumber.from(`${txtApprove}000000000000000000`);
+    const account = await getCurrentAccount();
         
-    var tx = await miPrTokenContract.connect(signer).approve(pubSContract.address, amount);
-    return await tx.wait();
-  });*/
-
-
+    try {
+      await safeMintOwner({
+        to: account,
+        features: caract,
+        guarantee: +garant,
+        interestRate: +interes,
+        nameAuto: nameAut,
+        price: +price,
+        uri: `https://rentcarnft.infura-ipfs.io/ipfs/${result.path}`, //https://rentcarnft.infura-ipfs.io/ipfs/
+      });
+    } catch (error) {
+      console.error(error);
+      return alert("Error al publicar");
+    }
   };
 
   return (
@@ -114,7 +113,7 @@ export default function Collection() {
                 </label>
                 <input
                   type="number"
-                  step="0.01"
+                  step="0.00001"
                   id="price"
                   value={price}
                   onChange={(e) => setPrice(parseFloat(e.target.value))}
@@ -127,7 +126,7 @@ export default function Collection() {
                 </label>
                 <input
                   type="number"
-                  step="0.01"
+                  step="0.00000001"
                   id="garant"
                   value={garant}
                   onChange={(e) => setGarant(e.target.value)}
@@ -140,7 +139,7 @@ export default function Collection() {
                 </label>
                 <input
                   type="number"
-                  step="0.01"
+                  step="0.00000000000000001"
                   id="interes"
                   value={interes}
                   onChange={(e) => setInteres(e.target.value)}

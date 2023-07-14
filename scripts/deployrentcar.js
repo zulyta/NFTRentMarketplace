@@ -15,7 +15,7 @@ var BURNER_ROLE = getRole("BURNER_ROLE");
 
 async function deployMumbai() {
   var relayerAddress = "0xfcB8555bB06b13784E7861ddC9587B9920AF8026";
-  var nftContractAddress = "0xAb68c60C5d74720c6456319F9132E6f47d22D7d3";
+  var nftContractAddress = "0xBC94F3a8dE24C230182569FbA5ffac3D5E1e4f16";
   var marketplaceOwner = "0x860cb92096D13b34E6d5638f68d6F1B6be77CfC9";
   //var commissionPercentage = 10;
 

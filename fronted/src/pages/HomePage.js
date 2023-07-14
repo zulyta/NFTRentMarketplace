@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { BrowserProvider } from "ethers";
-import { ContractsContext } from "../App";
+import { getCars, gtotalSupply, tokenURI } from "../providers/NftService";
+import { getCurrentAccount } from "../contracts";
 
 export default function Home() {
   const [currentAccount, setCurrentAccount] = useState("");
   const [balance, setBalance] = useState("");
 
-  const checkIfWalletIsConnected = async () => {
+
+   const checkIfWalletIsConnected = async () => {
     /*
      * Primero nos aseguramos de que tenemos acceso a window.ethereum
      */
@@ -66,42 +68,71 @@ export default function Home() {
   /*
    * Esto ejecuta nuestra función cuando se carga la página.
    */
+  const getTknID = async () => {
+    const tonkenID = await getCurrentAccount()
+    await tokenURI(tonkenID)
+  };
+
 
   useEffect(() => {
     checkIfWalletIsConnected();
   }, []);
 
-  return (
-    <ContractsContext.Consumer>
-      {(contracts) => {
-        console.log(contracts);
-        return (
-          <div className="App text-center mt-4">
-            <h1 className="text-2xl font-bold text-gray-800">
-              Conecta con tu Wallet
-            </h1>
-            <p>Direcion: <span className="text-base text-gray-600">{currentAccount}</span></p>
-            <p>Balance: <span className="text-base text-gray-600">{balance}</span></p>
+ 
 
-            {!currentAccount && (
-              <button
-                className="waveButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={connectWallet}
-              >
-                Conecta tu cartera
-              </button>
-            )}
-            {currentAccount && (
-              <button
-                className="waveButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={getBalance}
-              >
-                Obtener Balance
-              </button>
-            )}
-          </div>
-        );
-      }}
-    </ContractsContext.Consumer>
+  return (
+    <div className="App text-center mt-4">
+      <h1 className="text-2xl font-bold text-gray-800">
+        Conecta con tu Wallet
+      </h1>
+      <p>
+        Direcion:{" "}
+        <span className="text-base text-gray-600">{currentAccount}</span>
+      </p>
+      <p>
+        Balance: <span className="text-base text-gray-600">{balance}</span>
+      </p>
+
+      {!currentAccount && (
+        <button
+          className="waveButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={connectWallet}
+        >
+          Conecta tu cartera
+        </button>
+      )}
+      {currentAccount && (
+        <button
+          className="waveButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={getBalance}
+        >
+          Obtener Balance
+        </button>
+      )}
+
+        <button
+          className="waveButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={getCars}
+        >
+          Obtener Lista de carros
+        </button>
+
+        
+        <button
+          className="waveButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={gtotalSupply}
+        >
+          Numero de tokens creados
+        </button>
+
+        <button
+          className="waveButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={getTknID}
+        >
+          Muestra URI
+        </button>
+        
+
+    </div>
   );
 }
