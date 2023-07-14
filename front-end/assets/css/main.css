@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind utilities;
+
+@layer base {
+  .container {
+    @apply mx-auto px-4;
+  }
+
+  .header {
+    @apply bg-gray-600;
+  }
+
+  .header .container {
+    @apply
+      flex
+      items-center
+      flex-row;
+  }
+
+  .header .logo {
+    @apply
+      text-lg
+      w-52
+      text-white
+      uppercase
+      font-bold;
+  }
+
+  .header ul {
+    @apply
+      flex
+      space-x-4
+      py-4
+      w-full;
+  }
+
+  .header li a {
+    @apply
+    bg-gray-700
+    text-white
+      rounded-md
+      px-3
+      py-2
+      block
+      hover:bg-gray-900;
+  }
+
+  .logo img {
+    @apply h-12 object-cover;
+  }
+
+  [class^="btn-"] {
+    @apply
+      text-white
+      rounded-md
+      px-3
+      py-2
+      text-center
+      whitespace-nowrap;
+  }
+
+  .btn-connect-wallet {
+    @apply
+      bg-indigo-600
+  }
+
+  .nft-list {
+    @apply
+      my-6
+      grid
+      grid-cols-1
+      gap-x-6
+      gap-y-10
+      auto-rows-auto
+      sm:grid-cols-2
+      lg:grid-cols-4
+      xl:gap-x-8
+  }
+
+  .nft-item {
+    @apply
+      w-full
+      h-full
+      flex
+      flex-col
+      rounded-md
+      bg-white
+      drop-shadow-lg
+      overflow-hidden
+      transition
+      duration-200
+      hover:drop-shadow-xl
+  }
+
+  .nft-image {
+    @apply
+      lg:h-80
+      overflow-hidden;
+  }
+
+  .nft-item:hover img {
+    @apply
+      transition
+      ease-in-out
+      duration-300
+      scale-125
+      rotate-6;
+  }
+
+  .nft-image img {
+    @apply
+      w-full
+      h-full
+      transition
+      ease-in-out
+      object-cover;
+  }
+
+  .nft-footer {
+    @apply
+      p-4;
+  }
+
+  .nft-footer button {
+    @apply
+      mt-4
+  }
+
+  .modal-content {
+    @apply
+      p-4;
+  }
+
+  .nft-detail {
+    @apply
+      flex
+      mb-4;
+  }
+
+  .nft-detail h3 {
+    @apply
+      text-lg
+      mb-4;
+  }
+
+  .nft-detail ul {
+    @apply
+      ml-4;
+  }
+
+  .nft-inputs {
+    @apply
+      flex
+      gap-x-4
+      my-4;
+  }
+  
+  .nft-inputs .input {
+    @apply
+      w-full;
+  }
+
+}
