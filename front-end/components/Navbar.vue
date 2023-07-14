@@ -30,7 +30,7 @@ onMounted(() => {
 });
 
 const urls = [
-  { name: 'Publicar NFT', path: '/lend-nft' },
+  { name: 'Publicar NFT', path: '/post-nft' },
   { name: 'Perfil', path: '/profile' },
 ];
 
