@@ -1,6 +1,10 @@
 import { ethers } from 'ethers';
 import nftTknAbi from '../../artifacts/contracts/NFT.sol/NFT.json';
 import rentCarTknAbi from '../../artifacts/contracts/RentCar.sol/RentCar.json';
+import addresses from '@/content/addresses.json';
+
+const nftTokenAddress = addresses.nft;
+const rentCarAddress = addresses.rentCar;
 
 export default defineNuxtPlugin({
   name: 'ethers-config',
@@ -67,22 +71,26 @@ export default defineNuxtPlugin({
       }
     }
 
+    async function configContract(address, abi) {
+      try {
+        if (checkIfMetaMaskIsInstalled()) {
+          const provider = new ethers.JsonRpcProvider(
+            'https://polygon-mumbai.g.alchemy.com/v2/qsTcAHsFE1ZaO10FZfkCsXYdxL5cVax4'
+          );
+          return new ethers.Contract(address, abi, provider);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     async function getNFTs() {
       try {
-        const provider = new ethers.JsonRpcProvider(
-          'https://polygon-mumbai.g.alchemy.com/v2/qsTcAHsFE1ZaO10FZfkCsXYdxL5cVax4'
-        );
-        const nftTokenAddress = '0xAb68c60C5d74720c6456319F9132E6f47d22D7d3';
-        const nftTokenContract = new ethers.Contract(
-          nftTokenAddress,
-          nftTknAbi.abi,
-          provider
-        );
-
-        const totalSupply = await nftTokenContract.totalSupply();
+        const contract = await configContract(nftTokenAddress, nftTknAbi.abi);
+        const totalSupply = await contract.totalSupply();
         for (let i = 0; i < totalSupply; i++) {
-          const tokenURI = await nftTokenContract.tokenURI(i);
-          const data = await nftTokenContract.getCar(i);
+          const tokenURI = await contract.tokenURI(i);
+          const data = await contract.getCar(i);
           var object = {
             tokenId: Number(data.tokenId),
             image: tokenURI,
@@ -100,15 +108,16 @@ export default defineNuxtPlugin({
     }
 
     async function rentCar(tokenId) {
-      const provider = new ethers.JsonRpcProvider(
-        'https://polygon-mumbai.g.alchemy.com/v2/qsTcAHsFE1ZaO10FZfkCsXYdxL5cVax4'
-      );
-      const rentCarAddress = '0xcdCC6a394d8f30DC43Be1Bc9aE9f42D98d2c8d13';
-      const rentCarContract = new ethers.Contract(
-        rentCarAddress,
-        rentCarTknAbi.abi,
-        provider
-      );
+      try {
+        const contract = await configContract(
+          rentCarAddress,
+          rentCarTknAbi.abi
+        );
+        const rent = await contract.rent(tokenId);
+        console.log(rent);
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     const plugin = {
