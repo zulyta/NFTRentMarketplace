@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="wrap">
     <div class="nft-list">
       <div class="nft-item" v-for="(nft, index) in nftList" :key="index">
         <div class="nft-image">

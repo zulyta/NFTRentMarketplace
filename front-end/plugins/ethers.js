@@ -74,10 +74,12 @@ export default defineNuxtPlugin({
     async function configContract(address, abi) {
       try {
         if (checkIfMetaMaskIsInstalled()) {
-          const provider = new ethers.JsonRpcProvider(
-            'https://polygon-mumbai.g.alchemy.com/v2/qsTcAHsFE1ZaO10FZfkCsXYdxL5cVax4'
-          );
-          return new ethers.Contract(address, abi, provider);
+          // const provider = new ethers.JsonRpcProvider(
+          //   'https://polygon-mumbai.g.alchemy.com/v2/qsTcAHsFE1ZaO10FZfkCsXYdxL5cVax4'
+          // );
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          const signer = await provider.getSigner();
+          return new ethers.Contract(address, abi, signer);
         }
       } catch (error) {
         console.log(error);
@@ -107,6 +109,25 @@ export default defineNuxtPlugin({
       }
     }
 
+    async function mintNft(data) {
+      try {
+        const contract = await configContract(nftTokenAddress, nftTknAbi.abi);
+        console.log(data);
+        const mint = await contract.safeMintOwner(
+          data.to,
+          data.uri,
+          data.nameAuto,
+          data.features,
+          data.price,
+          data.guarantee,
+          data.interestRate
+        );
+        return mint;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     async function rentCar(tokenId) {
       try {
         const contract = await configContract(
@@ -130,6 +151,7 @@ export default defineNuxtPlugin({
       getBalanceAccount,
       getNFTs,
       nftList,
+      mintNft,
     };
 
     nuxtApp.provide('ethers', plugin);
