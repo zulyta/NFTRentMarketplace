@@ -66,6 +66,42 @@
         />
       </template>
     </UCard>
+    <UModal v-model="isOpen">
+      <UCard>
+        <template #header>
+          <h3 class="font-bold text-xl text-center">
+            {{ form.nameAuto }}
+          </h3></template
+        >
+        <div class="modal-content">
+          <div class="nft-detail">
+            <div class="nft-header">
+              <img :src="placeImage" />
+            </div>
+            <ul>
+              <li><b>Características:</b> {{ form.features }}</li>
+              <li><b>Precio:</b> {{ form.price }}</li>
+              <li><b>Garantía:</b> {{ form.guarantee }}</li>
+              <li><b>Interés:</b> {{ form.interestRate }}</li>
+            </ul>
+          </div>
+        </div>
+        <template #footer>
+          <div class="flex items-center text-emerald-600">
+            <UIcon name="i-heroicons-check" class="w-6 h-6" />
+            <span class="ml-2">Auto publicado con éxito</span>
+
+            <UButton
+              label="Ver transacción"
+              color="white"
+              icon="i-heroicons-viewfinder-circle"
+              class="ml-auto"
+              @click="goScan(txHash)"
+            />
+          </div>
+        </template>
+      </UCard>
+    </UModal>
     <UNotifications />
   </div>
 </template>
@@ -79,6 +115,8 @@ const placeImage = ref(
   'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
 );
 const form = ref({});
+const txHash = ref(null);
+const isOpen = ref(false);
 
 const getImage = (image) => {
   Object.assign(form.value, { image: image });
@@ -126,8 +164,12 @@ const createNft = async () => {
           interestRate: form.value.interestRate,
         };
 
-        const minted = await mintNft(data);
-        console.log(minted);
+        const tx = await mintNft(data);
+        if (tx) {
+          txHash.value = tx.hash;
+          isOpen.value = true;
+          form.value = {};
+        }
       }
     } else {
       toast.add({
@@ -148,5 +190,8 @@ const createNft = async () => {
   } catch (error) {
     console.log(error);
   }
+};
+const goScan = (hash) => {
+  window.open(`https://mumbai.polygonscan.com/tx/${hash}`, '_blank');
 };
 </script>

@@ -74,9 +74,6 @@ export default defineNuxtPlugin({
     async function configContract(address, abi) {
       try {
         if (checkIfMetaMaskIsInstalled()) {
-          // const provider = new ethers.JsonRpcProvider(
-          //   'https://polygon-mumbai.g.alchemy.com/v2/qsTcAHsFE1ZaO10FZfkCsXYdxL5cVax4'
-          // );
           const provider = new ethers.BrowserProvider(window.ethereum);
           const signer = await provider.getSigner();
           return new ethers.Contract(address, abi, signer);
@@ -112,8 +109,7 @@ export default defineNuxtPlugin({
     async function mintNft(data) {
       try {
         const contract = await configContract(nftTokenAddress, nftTknAbi.abi);
-        console.log(data);
-        const mint = await contract.safeMintOwner(
+        const tx = await contract.safeMintOwner(
           data.to,
           data.uri,
           data.nameAuto,
@@ -122,7 +118,7 @@ export default defineNuxtPlugin({
           data.guarantee,
           data.interestRate
         );
-        return mint;
+        return tx;
       } catch (error) {
         console.log(error);
       }
