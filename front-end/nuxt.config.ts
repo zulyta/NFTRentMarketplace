@@ -13,7 +13,7 @@ export default defineNuxtConfig({
       'composables',
     ]
   },
-  modules: ['@nuxthq/ui'],
+  modules: ['@nuxthq/ui','dayjs-nuxt'],
     ui: {
     icons: ['heroicons'],
   },

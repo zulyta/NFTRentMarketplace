@@ -83,7 +83,7 @@ export default defineNuxtPlugin({
       }
     }
 
-    async function getNFTs() {
+    async function getNfts() {
       try {
         const contract = await configContract(nftTokenAddress, nftTknAbi.abi);
         const totalSupply = await contract.totalSupply();
@@ -124,14 +124,19 @@ export default defineNuxtPlugin({
       }
     }
 
-    async function rentCar(tokenId) {
+    async function rentNft(data) {
       try {
         const contract = await configContract(
           rentCarAddress,
           rentCarTknAbi.abi
         );
-        const rent = await contract.rent(tokenId);
-        console.log(rent);
+        const tx = await contract.createRental(
+          data.carIndex,
+          data.tokenId,
+          data.startDate,
+          data.endDate
+        );
+        return tx;
       } catch (error) {
         console.log(error);
       }
@@ -145,9 +150,10 @@ export default defineNuxtPlugin({
       checkIfWalletIsConnected,
       connectWallet,
       getBalanceAccount,
-      getNFTs,
+      getNfts,
       nftList,
       mintNft,
+      rentNft,
     };
 
     nuxtApp.provide('ethers', plugin);

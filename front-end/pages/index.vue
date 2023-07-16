@@ -35,14 +35,23 @@
         <hr />
         <footer>
           <div class="nft-inputs">
-            <UFormGroup class="input" label="Días" required>
+            <UFormGroup class="input" label="Inicio" required>
               <UInput
-                placeholder="Ingresa los días de alquiler"
-                type="number"
-                @input="getPriceNFT($event.target.value, selectedNFT.price)"
+                placeholder="Selecciona una fecha de inicio"
+                :min="date"
+                type="date"
+                v-model="dates.startDate"
               />
             </UFormGroup>
-            <UFormGroup class="input" label="Costo final">
+            <UFormGroup class="input" label="Fin" required>
+              <UInput
+                placeholder="Selecciona una fecha de finalización"
+                :min="minDate"
+                type="date"
+                v-model="dates.endDate"
+              />
+            </UFormGroup>
+            <!-- <UFormGroup class="input" label="Costo final">
               <UInput placeholder="0.00" v-model="finalPriceNFT" disabled>
                 <template #trailing>
                   <span class="text-gray-500 dark:text-gray-400 text-xs"
@@ -50,19 +59,29 @@
                   >
                 </template>
               </UInput>
-            </UFormGroup>
+            </UFormGroup> -->
           </div>
-          <UButton label="Alquilar" color="emerald" size="lg" block />
+          <UButton
+            label="Alquilar"
+            color="emerald"
+            size="lg"
+            block
+            @click="createRent()"
+          />
         </footer>
       </div>
     </UModal>
   </div>
 </template>
 <script setup>
-const { getNFTs, nftList } = useEthers();
+const { getNfts, nftList, rentNft } = useEthers();
+const dayjs = useDayjs();
+const date = dayjs().format('YYYY-MM-DD');
+const minDate = dayjs().add(1, 'day').format('YYYY-MM-DD');
+const dates = ref({});
 
 onMounted(() => {
-  getNFTs();
+  getNfts();
 });
 
 onUnmounted(() => {
@@ -80,5 +99,26 @@ const showDetailNFT = (nft) => {
 
 const getPriceNFT = (value, price) => {
   finalPriceNFT.value = BigInt(value) * price;
+};
+
+const createRent = async () => {
+  try {
+    const { startDate, endDate } = dates.value;
+    const { tokenId } = selectedNFT.value;
+    const data = {
+      carIndex: tokenId,
+      tokenId: tokenId,
+      startDate: dayjs(startDate).valueOf(),
+      endDate: dayjs(endDate).valueOf(),
+    };
+
+    const tx = await rentNft(data);
+
+    if (tx) {
+      console.log(tx);
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 </script>
