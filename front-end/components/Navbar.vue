@@ -30,8 +30,10 @@ onMounted(() => {
 });
 
 const urls = [
+  { name: 'Inicio', path: '/' },
   { name: 'Publicar NFT', path: '/post-nft' },
-  { name: 'Perfil', path: '/profile' },
+  { name: 'Mis NFTs', path: '/my-nfts' },
+  { name: 'Mis NFTs Rentados', path: '/rented-nfts' },
 ];
 
 const btnConnect = () => {

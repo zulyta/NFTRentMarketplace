@@ -136,7 +136,7 @@ const createNft = async () => {
         ? true
         : false;
     };
-    if (checkForm) {
+    if (checkForm(form.value)) {
       const authorization =
         'Basic ' +
         btoa(

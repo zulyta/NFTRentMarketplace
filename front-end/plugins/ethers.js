@@ -135,6 +135,8 @@ export default defineNuxtPlugin({
           data.tokenId,
           data.startDate,
           data.endDate
+          // capturar valor del nft
+          // { value: 1 }
         );
         return tx;
       } catch (error) {

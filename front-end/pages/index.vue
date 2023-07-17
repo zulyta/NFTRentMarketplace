@@ -76,9 +76,14 @@
 <script setup>
 const { getNfts, nftList, rentNft } = useEthers();
 const dayjs = useDayjs();
+
+const isOpen = ref(false);
+const selectedNFT = ref({});
+const finalPriceNFT = ref(null);
+const dates = ref({});
+
 const date = dayjs().format('YYYY-MM-DD');
 const minDate = dayjs().add(1, 'day').format('YYYY-MM-DD');
-const dates = ref({});
 
 onMounted(() => {
   getNfts();
@@ -87,10 +92,6 @@ onMounted(() => {
 onUnmounted(() => {
   nftList.value = [];
 });
-
-const isOpen = ref(false);
-const selectedNFT = ref({});
-const finalPriceNFT = ref(null);
 
 const showDetailNFT = (nft) => {
   isOpen.value = true;
@@ -108,15 +109,18 @@ const createRent = async () => {
     const data = {
       carIndex: tokenId,
       tokenId: tokenId,
-      startDate: dayjs(startDate).valueOf(),
-      endDate: dayjs(endDate).valueOf(),
+      startDate: dayjs(startDate).unix(),
+      endDate: dayjs(endDate).unix(),
     };
+    console.log('dates', data.startDate, data.endDate);
 
-    const tx = await rentNft(data);
+    // agregar valor de ethers (wei) precio y garantia
 
-    if (tx) {
-      console.log(tx);
-    }
+    // const tx = await rentNft(data);
+
+    // if (tx) {
+    //   console.log(tx);
+    // }
   } catch (error) {
     console.log(error);
   }
