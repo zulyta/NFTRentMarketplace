@@ -1,9 +1,17 @@
 @tailwind base;
+@tailwind components;
 @tailwind utilities;
 
 @layer base {
   .container {
-    @apply mx-auto px-4;
+    @apply
+      mx-auto
+      px-4;
+  }
+
+  .wrap {
+    @apply
+      py-6;
   }
 
   .header {
@@ -158,6 +166,36 @@
   .nft-inputs .input {
     @apply
       w-full;
+  }
+
+  .form-card {
+    @apply
+      max-w-2xl
+      mx-auto;
+  }
+
+  .form-card h3 {
+    @apply
+      text-lg
+      font-bold
+      text-center;
+  }
+
+  .form-card .input {
+    @apply
+      mb-4;
+  }
+
+  .form-card img {
+    @apply
+      w-80
+      min-h-fit
+      object-cover
+      rounded-md
+      border-dashed
+      border-2
+      border-gray-300
+      m-auto;
   }
 
 }

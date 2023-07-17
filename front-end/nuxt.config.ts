@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  css: ['~/assets/css/main.css'],
+  css: ['@/assets/css/main.css'],
   postcss: {
     plugins: {
       tailwindcss: {},
@@ -13,9 +13,10 @@ export default defineNuxtConfig({
       'composables',
     ]
   },
-  modules: [
-    '@nuxthq/ui'
-  ],
+  modules: ['@nuxthq/ui','dayjs-nuxt'],
+    ui: {
+    icons: ['heroicons'],
+  },
   colorMode: {
     preference: 'light',
     fallback: 'light',
@@ -29,5 +30,11 @@ export default defineNuxtConfig({
     config: {},
     injectPosition: 'first',
     viewer: true,
+  },
+  runtimeConfig: {
+      public: {
+        INFURA_API_KEY: process.env.NUXT_INFURA_API_KEY,
+        INFURA_API_KEY_SECRET: process.env.NUXT_INFURA_API_KEY_SECRET,
+      }
   }
 })
