@@ -54,7 +54,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
         __UUPSUpgradeable_init();
 
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        //_setupRole(RENTER_ROLE, msg.sender);
+        _setupRole(RENTER_ROLE, msg.sender);
         
     
         nftContract = NFT(_nftContractAddress);
@@ -111,7 +111,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
 
     //permite al renter devolver el auto, este debe ingresar el id 
     //del auto a devolver, luego se verifica que el id sea valido, para marcar como inactivo y disponible, finalmente el propietario transfiere la garantia
-    function returnRental(uint256 rentalId) external onlyRole(RENTER_ROLE) {
+    function returnRental(uint256 rentalId) external {
         require(rentalId < rentals.length, "ID de alquiler invalido");
         Rental storage rental = rentals[rentalId];
         require(rental.renter == msg.sender, "No es el arrendatario de este alquiler");
