@@ -1,7 +1,12 @@
-<!-- <template>
+<template>
   <div class="wrap">
     <div class="nft-list">
-      <div class="nft-item" v-for="(nft, index) in nftList" :key="index">
+      <div
+        class="nft-item"
+        :v-if="myNftList"
+        v-for="nft in myNftList"
+        :key="nft.tokenId"
+      >
         <div class="nft-image">
           <img :src="nft.image" />
         </div>
@@ -9,8 +14,8 @@
           <h3>{{ nft.nameAuto }}</h3>
           <h4># {{ nft.tokenId }}</h4>
           <UButton
-            label="Alquilar NFT"
-            color="emerald"
+            label="Ver detalle de NFT"
+            color="blue"
             size="lg"
             block
             @click="showDetailNFT(nft)"
@@ -38,23 +43,19 @@
 </template>
 <script setup>
 const { getMyNfts, myNftList } = useEthers();
+const isOpen = ref(false);
+const selectedNFT = ref({});
 
-onMounted(() => {
-  getMyNfts();
+onMounted(async () => {
+  await getMyNfts();
 });
 
 onUnmounted(() => {
   myNftList.value = [];
 });
-</script> -->
-<template>
-  <div>My Nfts</div>
-</template>
 
-<script setup>
-const { getMyNfts } = useEthers();
-
-onMounted(() => {
-  getMyNfts();
-});
+const showDetailNFT = (nft) => {
+  isOpen.value = true;
+  selectedNFT.value = nft;
+};
 </script>

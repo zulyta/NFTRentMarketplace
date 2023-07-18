@@ -15,6 +15,7 @@ export default defineNuxtPlugin({
     const currentAccount = ref(null);
     const currentAccountBalance = ref(0);
     const nftList = ref([]);
+    const myNftList = ref([]);
 
     function checkIfMetaMaskIsInstalled() {
       if (window.ethereum) {
@@ -175,7 +176,31 @@ export default defineNuxtPlugin({
 
     async function getMyNfts() {
       try {
-        console.log('method');
+        const contract = await configContract(nftTokenAddress, nftTknAbi.abi);
+        let eventFilter = contract.filters.Transfer(
+          '0x0000000000000000000000000000000000000000',
+          null,
+          null
+        );
+        let events = await contract.queryFilter(eventFilter);
+        events.forEach(async (event) => {
+          if (event.args[1].toLowerCase() === currentAccount.value) {
+            const tokenURI = await contract.tokenURI(parseInt(event.args[2]));
+            const data = await contract.getCar(parseInt(event.args[2]));
+            if (data) {
+              var object = {
+                tokenId: parseInt(event.args[2]),
+                image: tokenURI,
+                nameAuto: data.nameAuto,
+                features: data.features,
+                price: data.price,
+                guarantee: data.guarantee,
+                interestRate: data.interestRate,
+              };
+              myNftList.value.push(object);
+            }
+          }
+        });
       } catch (error) {
         const parsedError = getParsedEthersError(error);
         return parsedError;
@@ -195,6 +220,7 @@ export default defineNuxtPlugin({
       mintNft,
       rentNft,
       getMyNfts,
+      myNftList,
     };
 
     nuxtApp.provide('ethers', plugin);
