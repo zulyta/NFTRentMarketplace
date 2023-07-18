@@ -50,3 +50,11 @@ onUnmounted(() => {
 <template>
   <div>My Nfts</div>
 </template>
+
+<script setup>
+const { getMyNfts } = useEthers();
+
+onMounted(() => {
+  getMyNfts();
+});
+</script>
