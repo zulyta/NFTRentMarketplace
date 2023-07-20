@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
@@ -48,11 +48,17 @@ contract NFT is Initializable, ERC721Upgradeable, ERC721URIStorageUpgradeable, A
     function _authorizeUpgrade(address) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
     // Funcion crea un nuevo token NFT y lo asigna a una direccion to
-    function safeMintOwner(address to, string memory uri, string memory nameAuto, string memory features, uint256 price, uint256 guarantee, uint256 interestRate)
+    function safeMintOwner(
+        string memory uri, 
+        string memory nameAuto, 
+        string memory features, 
+        uint256 price, 
+        uint256 guarantee, 
+        uint256 interestRate)
         public
     {
         uint256 tokenId = _tokenIdCounter.current();
-        _safeMint(to, tokenId);
+        _safeMint(msg.sender, tokenId);
         _setTokenURI(tokenId, uri);
          cars.push(Car(tokenId, nameAuto, features, price, guarantee, interestRate));
         //incrementamos el contador para obtener un nuevo identificador

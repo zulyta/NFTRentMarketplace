@@ -4,7 +4,7 @@ require("@openzeppelin/hardhat-upgrades");
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.9",
+  solidity: "0.8.19",
   networks: {
     mumbai: {
       url: process.env.MUMBAI_TESNET_URL,
