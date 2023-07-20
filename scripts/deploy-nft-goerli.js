@@ -8,8 +8,8 @@ var gnosisSafe = process.env.GNOSIS_SAFE_ADDRESS_GOERLI;
 
 async function deployNftGoerli() {
   let relayerAddress = process.env.RELAYER_ADDRESS_GOERLI;
-  let nftContract = await deploySC('NFTv2', []);
-  let implementation = await printAddress('NFTv2', nftContract.address);
+  let nftContract = await deploySC('NFTv2_1', []);
+  let implementation = await printAddress('NFTv2_1', nftContract.address);
 
   await ex(
     nftContract,
