@@ -1,7 +1,12 @@
 <template>
   <div class="wrap">
     <div class="nft-list">
-      <div class="nft-item" v-for="(nft, index) in nftList" :key="index">
+      <div
+        class="nft-item"
+        :v-if="nftList"
+        v-for="nft in nftList"
+        :key="nft.tokenId"
+      >
         <div class="nft-image">
           <img :src="nft.image" />
         </div>
@@ -101,8 +106,8 @@ const dates = ref({});
 const date = dayjs().format('YYYY-MM-DD');
 const minDate = dayjs().add(1, 'day').format('YYYY-MM-DD');
 
-onMounted(() => {
-  getNfts();
+onMounted(async () => {
+  await getNfts();
 });
 
 onUnmounted(() => {

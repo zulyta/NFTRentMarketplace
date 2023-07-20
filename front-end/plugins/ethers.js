@@ -101,23 +101,21 @@ export default defineNuxtPlugin({
     async function getNfts() {
       try {
         const contract = await configContract(nftTokenAddress, nftTknAbi.abi);
-        const totalSupply = await contract.totalSupply();
-        for (let i = 0; i < totalSupply; i++) {
-          const tokenURI = await contract.tokenURI(i);
-          const data = await contract.getCar(i);
-          if (data) {
-            var object = {
-              tokenId: Number(data.tokenId),
-              image: tokenURI,
-              nameAuto: data.nameAuto,
-              features: data.features,
-              price: data.price,
-              guarantee: data.guarantee,
-              interestRate: data.interestRate,
-            };
-          }
+
+        const data = await contract.getCars();
+        data.forEach(async (element) => {
+          const tokenURI = await contract.tokenURI(element.tokenId);
+          var object = {
+            tokenId: Number(element.tokenId),
+            image: tokenURI,
+            nameAuto: element.nameAuto,
+            features: element.features,
+            price: element.price,
+            guarantee: element.guarantee,
+            interestRate: element.interestRate,
+          };
           nftList.value.push(object);
-        }
+        });
       } catch (error) {
         const parsedError = getParsedEthersError(error);
         return parsedError;
@@ -207,6 +205,29 @@ export default defineNuxtPlugin({
       }
     }
 
+    async function getMyNftsRented() {
+      try {
+        const contract = await configContract(
+          rentCarAddress,
+          rentCarTknAbi.abi
+        );
+        const rentals = await contract.getRenterRentals(currentAccount.value);
+        // let events = await contract.queryFilter(eventFilter);
+
+        console.log(rentals);
+
+        // events.forEach(async (event) => {
+        //   if (event.args[1].toLowerCase() === currentAccount.value) {
+        //     const tokenURI = await contract.tokenURI(parseInt(event.args[2]));
+        //     const data = await contract.getCar(parseInt(event.args[2]));
+        //   }
+        // });
+      } catch (error) {
+        const parsedError = getParsedEthersError(error);
+        return parsedError;
+      }
+    }
+
     const plugin = {
       ...ethers,
       currentAccount,
@@ -221,6 +242,7 @@ export default defineNuxtPlugin({
       rentNft,
       getMyNfts,
       myNftList,
+      getMyNftsRented,
     };
 
     nuxtApp.provide('ethers', plugin);

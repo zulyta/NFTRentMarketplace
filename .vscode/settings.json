@@ -1,8 +1,9 @@
 {
-    "conventionalCommits.scopes": [
-        "fronted",
-        "Smart Contract",
-        "update SC y collection ",
-        "update SmartContract "
-    ]
+  "conventionalCommits.scopes": [
+    "fronted",
+    "Smart Contract",
+    "update SC y collection ",
+    "update SmartContract "
+  ],
+  "solidity.compileUsingRemoteVersion": "v0.8.18+commit.87f61d96"
 }
