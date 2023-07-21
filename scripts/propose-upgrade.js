@@ -3,7 +3,7 @@ require('dotenv').config();
 const { defender } = require('hardhat');
 
 async function proposeUpgrade() {
-  const proxyAddress = process.env.PROXY_ADDRESS_NFT;
+  const proxyAddress = process.env.NFT_PROXY_ADDRESS_GOERLI;
 
   const newImplementationContract = await ethers.getContractFactory(
     'name of contract to upgrade to'
