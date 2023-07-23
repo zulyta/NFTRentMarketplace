@@ -27,4 +27,10 @@ module.exports = {
       polygonMumbai: process.env.POLYGONSCAN_API_KEY,
     },
   },
+  settings: {
+    optimizer: {
+      enabled: true,
+      runs: 200,
+    },
+  },
 };
