@@ -56,6 +56,23 @@ describe("RENTAL TESTING", function () {
       // Bob devuelve el carro de Alice (id = 0)
       await rentCar.connect(bob).returnRental(0);
     });
+
+    it("Devuelve garantia", async () => {
+      var rental = await rentCar.getRental(0);
+    
+      // Verificar que el alquiler esté marcado como listo para devolución
+      expect(rental.readyForRefund).to.be.true;
+    
+      // Verificar que la fecha de finalización del alquiler haya pasado
+      expect(rental.endDate <= (await time.latest())).to.be.true;
+    
+      // Devolver la garantía
+      const returnAmount = await rentCar.connect(alice).refundGuarantee(0);
+    
+      // Imprimir el resultado en la consola
+      console.log("returnAmount:", returnAmount.toString());
+    });
+    
     // uint8: rango [0, 2^8 -1] = [0, 255]
     // uint256: rango [0, 2^256 - 1] = [0, 23094230948092840928304982309480293840928409289048230480293840928340283049]
     // error overflow es cuando 255 + 1 (pasas fuera encima del rango)

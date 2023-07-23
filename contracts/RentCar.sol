@@ -30,13 +30,15 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
         uint256 endDate;
         bool active;
         bool returned;
+        bool readyForRefund;
     }
     //Se declara variables privadas para almacenar los alquileres en forma de matris
     //tambies los indices de los alquileres de cada renter y cada prop
     Rental[] private rentals;
     mapping(address => uint256[]) private renterRentals;
     mapping(address => uint256[]) private carRentals;
-    mapping(uint256 => bool) private carAvailability; // Variable para rastrear la disponibilidad de los automóviles
+    mapping(uint256 => bool) private carAvailability; 
+    // Variable para rastrear la disponibilidad de los automóviles
 
     //se defien eventos para la creacion de alquileres y devolucion de los auto
     event RentalCreated(
@@ -138,33 +140,39 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
             rental.endDate < block.timestamp,
             "El alquiler aun no ha finalizado"
         );
-        rental.active = false;
-        rental.returned = false;
-
+        
         //Emite el evento RentalRetur para nofificar la finalizacion del alquiler
         emit RentalReturned(msg.sender, rentalId, rental.endDate);
 
-        uint256 returnAmount = calculateReturnGarante(rentalId);
-        require(returnAmount > 0, "No hay monto de devolucion para reembolsar");
-
-        address carOwner = nftContract.ownerOf(rental.tokenId);
-        require(carOwner != address(0), "Propietario de auto invalido");
-        
-        //payable(msg.sender).transfer(returnAmount); // Devolución de la garantía al arrendatario
-        
-        //bool success = payable(msg.sender).send(returnAmount);
-        //require(success, "La devolucion ha fallado"); 
-
-        //// Verificar si la transferencia tuvo éxito
-        // //Marcar el carro como disponible nuevamente
-        rental.active = true;
+        rental.active = false; // Cambia a false para marcar el alquiler como finalizado
         rental.returned = true;
         carAvailability[rental.carIndex] = true;
+        rental.readyForRefund = true;
+
+         }
+
+  
+    function refundGuarantee(uint256 rentalId) external {
+
+         uint256 returnAmount = calculateReturnGarante(rentalId);
+         
+        require(returnAmount > 0, "No hay monto de devolucion para reembolsar");
+
+         Rental storage rental = rentals[rentalId];
+        // Validar que msg.sender es el dueño del NFT
+        require(msg.sender == nftContract.ownerOf(rental.tokenId));
+
+        // Validar marcado listo para devolución 
+        require(rental.readyForRefund == true, "No listo para devolucion");
+
+        // Transferir garantía a arrendatario
+        payable(rental.renter).transfer(returnAmount);
 
         // // Quemar el NFT de alquiler
-        //nftContract.burnOwnerToken(rental.tokenId); // Quemar el token del propietario del auto
-        //nftContract.burnRenterToken(rental.tokenId); // Quemar el token del arrendatario
-    }
+        nftContract.burnOwnerToken(rental.tokenId); // Quemar el token del propietario del auto
+        nftContract.burnRenterToken(rental.tokenId); // Quemar el token del arrendatario
+
+        }
 
     /*Esta funcion calcula el costo de un alquiler en funcion de su ID de alquiler, luego
     Luego obtiene el precio, la garantia y el interes definido por el propietario asociado al 
@@ -210,7 +218,6 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
             return 0; // No hay devolución de garantía si aún no se ha cumplido la fecha de finalización
         }
     }
-
     /*/Verifica si un token NFT con el ID proporcionado existe, utiliza la funcion totalSupply del SC NFT para 
     obtener el numero total de tokens o autos*/
     function tokenIdExists(uint256 tokenId) private view returns (bool) {
@@ -263,7 +270,8 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
             uint256 startDate,
             uint256 endDate,
             bool active,
-            bool returned
+            bool returned,
+            bool readyForRefund
         )
     {
         require(rentalId < rentals.length, "ID de alquiler invalido");
@@ -275,7 +283,8 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
             rental.startDate,
             rental.endDate,
             rental.active,
-            rental.returned
+            rental.returned,
+            rental.readyForRefund
         );
     }
 
