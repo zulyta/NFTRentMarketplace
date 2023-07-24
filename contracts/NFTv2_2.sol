@@ -2,7 +2,6 @@
 pragma solidity 0.8.18;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -11,7 +10,6 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
 contract NFTv2_2 is
     Initializable,
-    PausableUpgradeable,
     ERC721Upgradeable,
     ERC721URIStorageUpgradeable,
     AccessControlUpgradeable,
@@ -23,9 +21,11 @@ contract NFTv2_2 is
     // @dev Variable para contar los tokens emitidos y el total de tokens
     CountersUpgradeable.Counter private _tokenIdCounter;
 
+    // @dev Variable para contar los tokens de comprobante te venta emitidos y el total de los mismos.
+    CountersUpgradeable.Counter private _rentalIdCounter;
+
     // @dev Seteos de roles para el contrato
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     // @dev Estructura Car para representar los atributos de un carro
@@ -37,10 +37,11 @@ contract NFTv2_2 is
         string licensePlate;
         uint256 rentalPricePerDay;
         uint256 rentalGuarantee;
-        int256 lateReturnInterest;
+        uint256 lateReturnInterestPerDay;
+        bool isRented;
     }
 
-    // @dev Lista de todos los tokens NFT de carro creados-
+    // @dev Lista de todos los tokens NFT de carro creados.
     mapping(uint256 => Car) private _cars;
 
     // @dev Evento que se emite cuando se crea un nuevo token NFT.
@@ -53,20 +54,19 @@ contract NFTv2_2 is
         string licensePlate,
         uint256 rentalPricePerDay,
         uint256 rentalGuarantee,
-        int256 lateReturnInterest
+        uint256 lateReturnInterestPerDay,
+        bool isRented
     );
 
     // @dev Inicializador del contrato
     function initialize() public initializer {
         __ERC721_init("NFT Car", "NFTCAR");
-        __Pausable_init();
         __ERC721URIStorage_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
 
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);
-        _setupRole(PAUSER_ROLE, msg.sender);
         _setupRole(UPGRADER_ROLE, msg.sender);
     }
 
@@ -86,8 +86,8 @@ contract NFTv2_2 is
         string memory licensePlate,
         uint256 rentalPricePerDay,
         uint256 rentalGuarantee,
-        int256 lateReturnInterest
-    ) public onlyRole(MINTER_ROLE) whenNotPaused {
+        uint256 lateReturnInterestPerDay
+    ) public onlyRole(MINTER_ROLE) {
         require(rentalPricePerDay > 0, "Precio de alquiler no puede ser cero");
         require(rentalGuarantee > 0, "Garantia de alquiler no puede ser cero");
 
@@ -103,7 +103,8 @@ contract NFTv2_2 is
             licensePlate,
             rentalPricePerDay,
             rentalGuarantee,
-            lateReturnInterest
+            lateReturnInterestPerDay,
+            false
         );
 
         emit CarNFTCreated(
@@ -115,10 +116,43 @@ contract NFTv2_2 is
             licensePlate,
             rentalPricePerDay,
             rentalGuarantee,
-            lateReturnInterest
+            lateReturnInterestPerDay,
+            false
         );
 
         _tokenIdCounter.increment();
+    }
+
+    // @dev Función segura para que se cree un nuevo token de renta como comprobante.
+    // @param owner La dirección del destinatario que recibirá el nuevo token.
+    // @return El identificador único del token de renta.
+    function mintRentalToken(
+        address owner
+    ) public onlyRole(MINTER_ROLE) returns (uint256) {
+        uint256 tokenId = _rentalIdCounter.current();
+        _safeMint(owner, tokenId);
+        _rentalIdCounter.increment();
+
+        return tokenId;
+    }
+
+    // @dev Función para quemar un token de renta específico.
+    // @param tokenId El identificador único del token de renta que se va a quemar.
+    function burnRentalToken(uint256 tokenId) external {
+        address renter = ownerOf(tokenId);
+        require(renter != address(0), "Arrendatario de token invalido");
+        _burn(tokenId);
+    }
+
+    // @dev Función para actualizar el estado alquilado de un NFT.
+    // @param tokenId El identificador único del token.
+    // @param isRented El nuevo estado alquilado del token.
+    function setNFTRented(
+        uint256 tokenId,
+        bool isRented
+    ) public onlyRole(MINTER_ROLE) {
+        require(_exists(tokenId), "El token no existe");
+        _cars[tokenId].isRented = isRented;
     }
 
     // @dev Función para obtener los atributos de un token NFT.
@@ -169,17 +203,6 @@ contract NFTv2_2 is
         return super.tokenURI(tokenId);
     }
 
-    // @dev Función para pausar el contrato
-    // @notice Las funciones pause() y unpause() solo pueden ser ejecutada por los poseedores del rol PAUSER_ROLE
-    function pause() public onlyRole(PAUSER_ROLE) {
-        _pause();
-    }
-
-    // @dev Función para despausar el contrato
-    function unpause() public onlyRole(PAUSER_ROLE) {
-        _unpause();
-    }
-
     // @dev Función para comprobar si el contrato admite una interfaz específica.
     // @param interfaceId El identificador único de la interfaz que se quiere comprobar.
     // @return true si el contrato admite la interfaz especificada, false en caso contrario.
@@ -190,9 +213,9 @@ contract NFTv2_2 is
         public
         view
         override(
-            AccessControlUpgradeable,
             ERC721Upgradeable,
-            ERC721URIStorageUpgradeable
+            ERC721URIStorageUpgradeable,
+            AccessControlUpgradeable
         )
         returns (bool)
     {
@@ -209,6 +232,6 @@ contract NFTv2_2 is
     // @dev Devuelve la versión actual del contrato en formato string.
     // @return String que representa la versión actual del contrato.
     function version() public pure returns (string memory) {
-        return "2.2.0";
+        return "2.2.1";
     }
 }

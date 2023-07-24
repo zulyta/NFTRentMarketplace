@@ -27,7 +27,7 @@ describe('NFT_v2_2 testing', function () {
       licensePlate: 'ABC123',
       rentalPricePerDay: ethers.utils.parseEther('0.1'),
       rentalGuarantee: ethers.utils.parseEther('0.1'),
-      lateReturnInterest: 10,
+      lateReturnInterestPerDay: 10,
     };
 
     const carMinted = await nftContract.mintCarNFT(
@@ -38,7 +38,7 @@ describe('NFT_v2_2 testing', function () {
       data.licensePlate,
       data.rentalPricePerDay,
       data.rentalGuarantee,
-      data.lateReturnInterest
+      data.lateReturnInterestPerDay
     );
 
     return { carMinted, data };
@@ -46,28 +46,32 @@ describe('NFT_v2_2 testing', function () {
 
   describe('NFT Contract - v2.2', function () {
     it('Should create a new car NFT', async function () {
-      const contract = await createCarNFT();
+      const tx = await createCarNFT();
       const car = await nftContract.getCar(0);
-      expect(car.name).to.equal(contract.data.name);
-      expect(car.imageURI).to.equal(contract.data.imageURI);
-      expect(car.features).to.equal(contract.data.features);
-      expect(car.licensePlate).to.equal(contract.data.licensePlate);
-      expect(car.rentalPricePerDay).to.equal(contract.data.rentalPricePerDay);
-      expect(car.rentalGuarantee).to.equal(contract.data.rentalGuarantee);
-      expect(car.lateReturnInterest).to.equal(contract.data.lateReturnInterest);
+      expect(car.name).to.equal(tx.data.name);
+      expect(car.imageURI).to.equal(tx.data.imageURI);
+      expect(car.features).to.equal(tx.data.features);
+      expect(car.licensePlate).to.equal(tx.data.licensePlate);
+      expect(car.rentalPricePerDay).to.equal(tx.data.rentalPricePerDay);
+      expect(car.rentalGuarantee).to.equal(tx.data.rentalGuarantee);
+      expect(car.lateReturnInterestPerDay).to.equal(
+        tx.data.lateReturnInterestPerDay
+      );
     });
 
     it('Should get car details by tokenId', async function () {
-      const contract = await createCarNFT();
+      const tx = await createCarNFT();
       const tokenId = 0;
       const car = await nftContract.getCar(tokenId);
-      expect(car.name).to.equal(contract.data.name);
-      expect(car.imageURI).to.equal(contract.data.imageURI);
-      expect(car.features).to.equal(contract.data.features);
-      expect(car.licensePlate).to.equal(contract.data.licensePlate);
-      expect(car.rentalPricePerDay).to.equal(contract.data.rentalPricePerDay);
-      expect(car.rentalGuarantee).to.equal(contract.data.rentalGuarantee);
-      expect(car.lateReturnInterest).to.equal(contract.data.lateReturnInterest);
+      expect(car.name).to.equal(tx.data.name);
+      expect(car.imageURI).to.equal(tx.data.imageURI);
+      expect(car.features).to.equal(tx.data.features);
+      expect(car.licensePlate).to.equal(tx.data.licensePlate);
+      expect(car.rentalPricePerDay).to.equal(tx.data.rentalPricePerDay);
+      expect(car.rentalGuarantee).to.equal(tx.data.rentalGuarantee);
+      expect(car.lateReturnInterestPerDay).to.equal(
+        tx.data.lateReturnInterestPerDay
+      );
     });
 
     it('Should revert when tokenId does not exist', async function () {
