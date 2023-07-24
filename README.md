@@ -38,4 +38,4 @@ Para desplegar este proyecto, siga los siguientes pasos:
 1. Clone el repositorio desde GitHub:
 
 ```bash
-
+git clone https://github.com/zulyta/NFTRentMarketplace.git
