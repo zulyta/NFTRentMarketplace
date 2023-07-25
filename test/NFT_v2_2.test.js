@@ -1,7 +1,7 @@
 const { ethers } = require('hardhat');
 const { expect } = require('chai');
 
-const { getRole, deploySC, ex, pEth } = require('../utils');
+const { getRole, deploySC } = require('../utils');
 
 describe('NFT_v2_2 testing', function () {
   var nftContract;
@@ -57,6 +57,7 @@ describe('NFT_v2_2 testing', function () {
       expect(car.lateReturnInterestPerDay).to.equal(
         tx.data.lateReturnInterestPerDay
       );
+      expect(car.isRented).to.equal(false);
     });
 
     it('Should get car details by tokenId', async function () {
@@ -72,6 +73,7 @@ describe('NFT_v2_2 testing', function () {
       expect(car.lateReturnInterestPerDay).to.equal(
         tx.data.lateReturnInterestPerDay
       );
+      expect(car.isRented).to.equal(false);
     });
 
     it('Should revert when tokenId does not exist', async function () {
@@ -134,3 +136,6 @@ describe('NFT_v2_2 testing', function () {
     });
   });
 });
+
+// Run this test with:
+// npx hardhat test test/NFT_v2_2.test.js

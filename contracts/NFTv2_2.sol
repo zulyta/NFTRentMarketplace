@@ -22,10 +22,11 @@ contract NFTv2_2 is
     CountersUpgradeable.Counter private _tokenIdCounter;
 
     // @dev Variable para contar los tokens de comprobante te venta emitidos y el total de los mismos.
-    CountersUpgradeable.Counter private _rentalIdCounter;
+    uint256 private _rentalIdCounter;
 
     // @dev Seteos de roles para el contrato
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     // @dev Estructura Car para representar los atributos de un carro
@@ -67,7 +68,10 @@ contract NFTv2_2 is
 
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);
+        _setupRole(BURNER_ROLE, msg.sender);
         _setupRole(UPGRADER_ROLE, msg.sender);
+
+        _rentalIdCounter = 100000; // Seteo momentáneo para el contador de tokens de renta
     }
 
     // @dev Función segura para que se cree un nuevo token NFT.
@@ -107,6 +111,8 @@ contract NFTv2_2 is
             false
         );
 
+        _tokenIdCounter.increment();
+
         emit CarNFTCreated(
             tokenId,
             owner,
@@ -119,19 +125,15 @@ contract NFTv2_2 is
             lateReturnInterestPerDay,
             false
         );
-
-        _tokenIdCounter.increment();
     }
 
     // @dev Función segura para que se cree un nuevo token de renta como comprobante.
     // @param owner La dirección del destinatario que recibirá el nuevo token.
     // @return El identificador único del token de renta.
-    function mintRentalToken(
-        address owner
-    ) public onlyRole(MINTER_ROLE) returns (uint256) {
-        uint256 tokenId = _rentalIdCounter.current();
+    function mintRentalToken(address owner) public returns (uint256) {
+        uint256 tokenId = _rentalIdCounter;
         _safeMint(owner, tokenId);
-        _rentalIdCounter.increment();
+        _rentalIdCounter++;
 
         return tokenId;
     }
@@ -149,9 +151,14 @@ contract NFTv2_2 is
     // @param isRented El nuevo estado alquilado del token.
     function setNFTRented(
         uint256 tokenId,
+        address owner,
         bool isRented
-    ) public onlyRole(MINTER_ROLE) {
+    ) public {
         require(_exists(tokenId), "El token no existe");
+        require(
+            ownerOf(tokenId) == owner,
+            "El token no pertenece al propietario"
+        );
         _cars[tokenId].isRented = isRented;
     }
 

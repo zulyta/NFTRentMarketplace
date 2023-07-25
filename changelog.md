@@ -19,6 +19,7 @@
 - Se agregó función para hacer burn a token de renta.
 - Valor isRented en struct de Car.
 - Setteo de valor isRented mediante función.
+- Funciones para mint y burn de nft de alquiler como comprobantes.
 
 ## [RentCar v2.0.0] - 20-07-2023
 
@@ -37,3 +38,7 @@
 - Setteo de comisión mediante función.
 - Mejora en funciones de cálculo para renta.
 - Se agregaron test iniciales de covertura.
+- Función para retirar garantía por el arrendatario.
+- Minteo de nft de alquiler como comprobante.
+- Burn de nft como comprobante de alquiler.
+- Mejora en el test para crear renta, validar montos de pago y calculo de intereses.

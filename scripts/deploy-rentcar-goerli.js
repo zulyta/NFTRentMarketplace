@@ -2,6 +2,7 @@ require('dotenv').config();
 const { getRole, verify, ex, printAddress, deploySC } = require('../utils');
 
 var DEFAULT_ADMIN_ROLE = getRole('DEFAULT_ADMIN_ROLE');
+var PAUSER_ROLE = getRole('PAUSER_ROLE');
 var UPGRADER_ROLE = getRole('UPGRADER_ROLE');
 var gnosisSafe = process.env.GNOSIS_SAFE_ADDRESS_GOERLI;
 
@@ -9,12 +10,12 @@ async function deployRentCarGoerli() {
   let relayerAddress = process.env.RELAYER_ADDRESS_GOERLI;
   let nftContractAddress = process.env.NFT_PROXY_ADDRESS_GOERLI;
 
-  let rentCarContract = await deploySC('RentCarV2_1', [
+  let rentCarContract = await deploySC('RentCarV2_2', [
     nftContractAddress,
     relayerAddress,
   ]);
   let implementation = await printAddress(
-    'RentCarV2_1',
+    'RentCarV2_2',
     rentCarContract.address
   );
 
@@ -28,11 +29,18 @@ async function deployRentCarGoerli() {
   await ex(
     rentCarContract,
     'grantRole',
+    [PAUSER_ROLE, relayerAddress],
+    'Error granting PAUSER_ROLE'
+  );
+
+  await ex(
+    rentCarContract,
+    'grantRole',
     [UPGRADER_ROLE, gnosisSafe],
     'Error granting UPGRADER_ROLE'
   );
 
-  await verify(implementation, 'RentCarV2_1', []);
+  await verify(implementation, 'RentCarV2_2', []);
 }
 
 deployRentCarGoerli().catch((error) => {

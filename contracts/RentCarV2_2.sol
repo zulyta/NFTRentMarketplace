@@ -43,6 +43,7 @@ contract RentCarV2_2 is
         uint256 totalInterest;
         bool active;
         bool returned;
+        uint256 mintTokenId;
     }
 
     // @dev Dirección del propietario del Marketplace.
@@ -154,6 +155,7 @@ contract RentCarV2_2 is
     // @notice El alquiler se completará si la transacción cumple con los requisitos y si el coche está disponible para el período de tiempo solicitado.
     function createRental(
         uint256 tokenId,
+        address ownerTokenId,
         uint256 startDate,
         uint256 endDate
     ) external payable whenNotPaused NFTExists(tokenId) onlyNFTOwner(tokenId) {
@@ -168,6 +170,10 @@ contract RentCarV2_2 is
 
         uint256 totalPrice = calculateRentalCost(tokenId, startDate, endDate);
 
+        require(msg.value >= totalPrice, "Fondos insuficientes");
+
+        uint256 mintTokenId = nftContract.mintRentalToken(msg.sender);
+
         _rentals[rentalId] = Rental(
             tokenId,
             msg.sender,
@@ -177,19 +183,22 @@ contract RentCarV2_2 is
             totalPrice,
             0,
             true,
-            false
+            false,
+            mintTokenId
         );
 
         _renterRentals[msg.sender].push(rentalId);
         _carRentals[nftContract.ownerOf(tokenId)].push(rentalId);
-
-        require(msg.value >= totalPrice, "Fondos insuficientes");
 
         uint256 commission = totalPrice.mul(commissionPercentage).div(100);
         uint256 amountToOwner = totalPrice.sub(commission);
 
         payable(marketplaceOwner).transfer(commission);
         payable(nftContract.ownerOf(tokenId)).transfer(amountToOwner);
+
+        nftContract.setNFTRented(tokenId, ownerTokenId, true);
+
+        _rentalIdCounter.increment();
 
         emit RentalCreated(msg.sender, rentalId, tokenId, startDate, endDate);
     }
@@ -204,17 +213,19 @@ contract RentCarV2_2 is
         Rental storage rental = _rentals[rentalId];
 
         require(rental.active, "El alquiler no esta activo");
-        require(
-            rental.endDate < block.timestamp,
-            "El alquiler aun no ha finalizado"
-        );
         require(!rental.returned, "El alquier ya ha sido devuelto");
+        // require(
+        //     rental.endDate < block.timestamp,
+        //     "El alquiler aun no ha finalizado"
+        // );
 
         uint256 interest = calculateReturnInterest(rentalId);
 
         rental.totalInterest = interest;
         rental.active = false;
         rental.returned = true;
+
+        nftContract.burnRentalToken(rental.mintTokenId);
 
         emit RentalReturned(msg.sender, rentalId, block.timestamp);
     }
@@ -250,23 +261,23 @@ contract RentCarV2_2 is
     // @return La cantidad de interés a devolver al arrendatario.
     function calculateReturnInterest(
         uint256 rentalId
-    ) internal view returns (uint256) {
+    ) public view returns (uint256) {
         Rental storage rental = _rentals[rentalId];
-        uint256 lateDays = block.timestamp.sub(rental.endDate).div(1 days);
 
-        if (lateDays > 0 && rental.totalInterest == 0) {
-            uint256 rentalGuarantee = nftContract
-                .getCar(rental.tokenId)
-                .rentalGuarantee;
-            uint256 lateReturnInterestPerDay = nftContract
-                .getCar(rental.tokenId)
-                .lateReturnInterestPerDay;
-            return
-                rental
-                    .totalPrice
-                    .sub(rentalGuarantee)
-                    .mul(lateDays.mul(lateReturnInterestPerDay))
-                    .div(100);
+        if (block.timestamp > rental.endDate && rental.totalInterest == 0) {
+            NFTv2_2.Car memory car = nftContract.getCar(rental.tokenId);
+
+            uint256 lateDays = block.timestamp.sub(rental.endDate).div(1 days);
+
+            uint256 interest = lateDays.mul(
+                car.lateReturnInterestPerDay.div(100)
+            );
+
+            if (interest >= car.rentalGuarantee) return car.rentalGuarantee;
+
+            uint256 amount = car.rentalGuarantee.sub(interest);
+
+            return amount;
         } else {
             return 0;
         }
@@ -283,6 +294,23 @@ contract RentCarV2_2 is
             _rentals[rentalId].totalInterest > interest
                 ? _rentals[rentalId].totalInterest.sub(interest)
                 : 0;
+    }
+
+    // @dev Función pública para que el arrendatario del carro retire la garantía del alquiler.
+    // @param rentalId El ID único del alquiler para el cual se quiere retirar la garantía.
+    function guaranteeRefund(uint256 rentalId) external {
+        Rental storage rental = _rentals[rentalId];
+
+        uint256 returnAmount = calculateReturnGarantee(rentalId);
+        require(returnAmount > 0, "No hay monto de devolucion para reembolsar");
+
+        require(
+            msg.sender == nftContract.ownerOf(rental.tokenId) &&
+                rental.returned,
+            "Operacion no permitida"
+        );
+
+        payable(rental.renter).transfer(returnAmount);
     }
 
     // @dev Función pública de solo lectura para obtener información detallada sobre un alquiler específico a partir de su ID.
@@ -345,6 +373,6 @@ contract RentCarV2_2 is
     // @dev Devuelve la versión actual del contrato en formato string.
     // @return String que representa la versión actual del contrato.
     function version() public pure returns (string memory) {
-        return "2.2.2";
+        return "2.2.1";
     }
 }
