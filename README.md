@@ -28,12 +28,12 @@ Las funcionalidades principales del contrato RentCar son las siguientes:
 - Durante el proceso de alquiler, se registrarán los datos relevantes y se calculará la comisión correspondiente al 10% del costo total del alquiler para el dueño del Marketplace. Esta comisión se acumulará hasta que el dueño decida retirar los fondos acumulados a su billetera MetaMask. La diferencia restante del pago del alquiler se transferirá al propietario del auto.
 - Una vez realizada la transferencia del pago del alquiler y la comisión, el dueño del Marketplace generará o transferirá al arrendatario un NFT como prueba de que la transacción se ha realizado exitosamente.
 - El perfil del arrendatario y el propietario del auto mostrará todos los autos que haya alquilado y los NFT obtenidos como parte de los alquileres realizados.
-- Se crearán eventos para notificar al arrendatario y al propietario del auto sobre la fecha de inicio de alquiler y para notificar al arrendatario cuando finalice el alquiler.
-- Una vez recibida la notificación, el arrendatario deberá devolver el auto.
+-El propietario del auto deberá aprobar la devolución del auto al final del período de alquiler.
+- El contrato inteligente confirmará la devolución del auto y agregará el auto nuevamente a la lista de autos disponibles para alquiler. En caso de que el auto no se entregue en la fecha establecida, se comenzará a contabilizar el cobro de interés por día establecido por el propietario del auto en el contrato NFT, y este monto se descontará de la garantía depositada.
+- El contrato inteligente tendrá una función encargada de la devolución de la garantía, que realizará el propietario del auto al arrendatario. Además, verificará si el arrendatario devolvió el auto a tiempo o con retraso, y en base a ello calculará el monto total a devolver.
+- Una vez transferida la garantía, el proceso de alquiler se considerará finalizado.
 
 ## Cómo Desplegar el Proyecto
-
-Para desplegar este proyecto, siga los siguientes pasos:
 
 1. Clone el repositorio desde GitHub:
 
