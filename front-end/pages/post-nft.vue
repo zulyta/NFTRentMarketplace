@@ -128,7 +128,7 @@ const createNft = async () => {
   try {
     const checkForm = (object) => {
       return object.hasOwnProperty('image') &&
-        object.hasOwnProperty('namAuto') &&
+        object.hasOwnProperty('nameAuto') &&
         object.hasOwnProperty('features') &&
         object.hasOwnProperty('price') &&
         object.hasOwnProperty('guarantee') &&
@@ -136,7 +136,7 @@ const createNft = async () => {
         ? true
         : false;
     };
-    if (checkForm) {
+    if (checkForm(form.value)) {
       const authorization =
         'Basic ' +
         btoa(

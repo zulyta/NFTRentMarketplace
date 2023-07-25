@@ -37,7 +37,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     Rental[] private rentals;
     mapping(address => uint256[]) private renterRentals;
     mapping(address => uint256[]) private carRentals;
-    mapping(uint256 => bool) private carAvailability; 
+    mapping(uint256 => bool) private carAvailability;
     // Variable para rastrear la disponibilidad de los automóviles
 
     //se defien eventos para la creacion de alquileres y devolucion de los auto
@@ -140,7 +140,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
             rental.endDate < block.timestamp,
             "El alquiler aun no ha finalizado"
         );
-        
+
         //Emite el evento RentalRetur para nofificar la finalizacion del alquiler
         emit RentalReturned(msg.sender, rentalId, rental.endDate);
 
@@ -148,21 +148,18 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
         rental.returned = true;
         carAvailability[rental.carIndex] = true;
         rental.readyForRefund = true;
+    }
 
-         }
-
-  
     function refundGuarantee(uint256 rentalId) external {
+        uint256 returnAmount = calculateReturnGarante(rentalId);
 
-         uint256 returnAmount = calculateReturnGarante(rentalId);
-         
         require(returnAmount > 0, "No hay monto de devolucion para reembolsar");
 
-         Rental storage rental = rentals[rentalId];
+        Rental storage rental = rentals[rentalId];
         // Validar que msg.sender es el dueño del NFT
         require(msg.sender == nftContract.ownerOf(rental.tokenId));
 
-        // Validar marcado listo para devolución 
+        // Validar marcado listo para devolución
         require(rental.readyForRefund == true, "No listo para devolucion");
 
         // Transferir garantía a arrendatario
@@ -171,8 +168,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
         // // Quemar el NFT de alquiler
         nftContract.burnOwnerToken(rental.tokenId); // Quemar el token del propietario del auto
         nftContract.burnRenterToken(rental.tokenId); // Quemar el token del arrendatario
-
-        }
+    }
 
     /*Esta funcion calcula el costo de un alquiler en funcion de su ID de alquiler, luego
     Luego obtiene el precio, la garantia y el interes definido por el propietario asociado al 
@@ -191,7 +187,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
             86400
         );
         uint256 totalCost = price.mul(rentalDuration).add(guarantee);
-        
+
         return totalCost;
     }
 
@@ -218,6 +214,7 @@ contract RentCar is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
             return 0; // No hay devolución de garantía si aún no se ha cumplido la fecha de finalización
         }
     }
+
     /*/Verifica si un token NFT con el ID proporcionado existe, utiliza la funcion totalSupply del SC NFT para 
     obtener el numero total de tokens o autos*/
     function tokenIdExists(uint256 tokenId) private view returns (bool) {
