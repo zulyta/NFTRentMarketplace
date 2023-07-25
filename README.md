@@ -32,6 +32,10 @@ Las funcionalidades principales del contrato RentCar son las siguientes:
 - El contrato inteligente confirmará la devolución del auto y agregará el auto nuevamente a la lista de autos disponibles para alquiler. En caso de que el auto no se entregue en la fecha establecida, se comenzará a contabilizar el cobro de interés por día establecido por el propietario del auto en el contrato NFT, y este monto se descontará de la garantía depositada.
 - El contrato inteligente tendrá una función encargada de la devolución de la garantía, que realizará el propietario del auto al arrendatario. Además, verificará si el arrendatario devolvió el auto a tiempo o con retraso, y en base a ello calculará el monto total a devolver.
 - Una vez transferida la garantía, el proceso de alquiler se considerará finalizado.
+## Estructura
+![image](https://github.com/zulyta/NFTRentMarketplace/assets/32932810/ce97cf53-a7e0-4187-8c90-e2cc58f353da)
+![Dsecuencia](D:\PF-Blockchain\Diagrama e secuenca PF 07.png)
+## Diagrama de secuencia
 
 ## Cómo Desplegar el Proyecto
 
