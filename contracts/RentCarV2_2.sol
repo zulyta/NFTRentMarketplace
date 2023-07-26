@@ -3,7 +3,6 @@ pragma solidity 0.8.18;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
@@ -14,7 +13,6 @@ import "hardhat/console.sol";
 
 contract RentCarV2_2 is
     Initializable,
-    OwnableUpgradeable,
     PausableUpgradeable,
     AccessControlUpgradeable,
     UUPSUpgradeable
@@ -117,7 +115,6 @@ contract RentCarV2_2 is
         address _nftContractAddress,
         address _marketplaceOwner
     ) public initializer {
-        __Ownable_init();
         __Pausable_init();
         __AccessControl_init();
         __UUPSUpgradeable_init();
@@ -136,9 +133,7 @@ contract RentCarV2_2 is
     // @dev Esta función permite al propietario establecer el porcentaje de comisión.
     // @param _commissionPercentage El porcentaje de comisión que se desea establecer. Debe estar entre 0 y 100.
     // @notice Solo el propietario del contrato puede llamar a esta función.
-    function setCommissionPercentage(
-        uint256 _commissionPercentage
-    ) external onlyOwner {
+    function setCommissionPercentage(uint256 _commissionPercentage) external {
         require(
             _commissionPercentage <= 100,
             "Porcentaje debe estar entre 0 y 100"
@@ -155,7 +150,6 @@ contract RentCarV2_2 is
     // @notice El alquiler se completará si la transacción cumple con los requisitos y si el coche está disponible para el período de tiempo solicitado.
     function createRental(
         uint256 tokenId,
-        address ownerTokenId,
         uint256 startDate,
         uint256 endDate
     ) external payable whenNotPaused NFTExists(tokenId) onlyNFTOwner(tokenId) {
@@ -172,7 +166,9 @@ contract RentCarV2_2 is
 
         require(msg.value >= totalPrice, "Fondos insuficientes");
 
-        uint256 mintTokenId = nftContract.mintRentalToken(msg.sender);
+        nftContract.mintRentalToken(msg.sender);
+
+        uint256 mintTokenId = nftContract.totalSupply() - 1;
 
         _rentals[rentalId] = Rental(
             tokenId,
@@ -196,7 +192,7 @@ contract RentCarV2_2 is
         payable(marketplaceOwner).transfer(commission);
         payable(nftContract.ownerOf(tokenId)).transfer(amountToOwner);
 
-        nftContract.setNFTRented(tokenId, ownerTokenId, true);
+        nftContract.setNFTRented(tokenId, true);
 
         _rentalIdCounter.increment();
 
@@ -207,9 +203,7 @@ contract RentCarV2_2 is
     // @param rentalId El ID único del alquiler que se quiere devolver.
     // @notice Esta función debe ser llamada por el inquilino que desea devolver el alquiler.
     // @notice La función se encargará de realizar las operaciones necesarias para completar la devolución del alquiler.
-    function returnRental(
-        uint256 rentalId
-    ) external rentalExists(rentalId) onlyOwner {
+    function returnRental(uint256 rentalId) external rentalExists(rentalId) {
         Rental storage rental = _rentals[rentalId];
 
         require(rental.active, "El alquiler no esta activo");
@@ -225,7 +219,9 @@ contract RentCarV2_2 is
         rental.active = false;
         rental.returned = true;
 
-        nftContract.burnRentalToken(rental.mintTokenId);
+        // nftContract.burnRentalToken(rental.mintTokenId); // Burn deshabilitado por required en SC NFT
+
+        nftContract.setNFTRented(rental.tokenId, false);
 
         emit RentalReturned(msg.sender, rentalId, block.timestamp);
     }

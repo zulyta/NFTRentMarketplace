@@ -72,6 +72,29 @@
       bg-indigo-600
   }
 
+  .nft-list-empty {
+    @apply
+      flex
+      flex-col
+      items-center
+      justify-center
+      text-center
+      text-gray-500
+      py-10;
+  }
+
+  .nft-list-empty h3 {
+    @apply
+      font-semibold
+      mb-2;
+  }
+
+  .nft-list-empty h4 {
+    @apply
+      text-sm
+      mb-8;
+  }
+
   .nft-list {
     @apply
       my-6

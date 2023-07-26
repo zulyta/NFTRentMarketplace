@@ -8,6 +8,8 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
+import "hardhat/console.sol";
+
 contract NFTv2_2 is
     Initializable,
     ERC721Upgradeable,
@@ -18,11 +20,8 @@ contract NFTv2_2 is
     // @dev Librería CountersUpgradeable para contar los tokens emitidos.
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
-    // @dev Variable para contar los tokens emitidos y el total de tokens
+    // @dev Variable para contar los tokens emitidos (NFT y Comprobante de alquiler) y el total de tokens
     CountersUpgradeable.Counter private _tokenIdCounter;
-
-    // @dev Variable para contar los tokens de comprobante te venta emitidos y el total de los mismos.
-    uint256 private _rentalIdCounter;
 
     // @dev Seteos de roles para el contrato
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -70,8 +69,6 @@ contract NFTv2_2 is
         _setupRole(MINTER_ROLE, msg.sender);
         _setupRole(BURNER_ROLE, msg.sender);
         _setupRole(UPGRADER_ROLE, msg.sender);
-
-        _rentalIdCounter = 100000; // Seteo momentáneo para el contador de tokens de renta
     }
 
     // @dev Función segura para que se cree un nuevo token NFT.
@@ -130,12 +127,10 @@ contract NFTv2_2 is
     // @dev Función segura para que se cree un nuevo token de renta como comprobante.
     // @param owner La dirección del destinatario que recibirá el nuevo token.
     // @return El identificador único del token de renta.
-    function mintRentalToken(address owner) public returns (uint256) {
-        uint256 tokenId = _rentalIdCounter;
+    function mintRentalToken(address owner) external {
+        uint256 tokenId = _tokenIdCounter.current();
         _safeMint(owner, tokenId);
-        _rentalIdCounter++;
-
-        return tokenId;
+        _tokenIdCounter.increment();
     }
 
     // @dev Función para quemar un token de renta específico.
@@ -149,16 +144,8 @@ contract NFTv2_2 is
     // @dev Función para actualizar el estado alquilado de un NFT.
     // @param tokenId El identificador único del token.
     // @param isRented El nuevo estado alquilado del token.
-    function setNFTRented(
-        uint256 tokenId,
-        address owner,
-        bool isRented
-    ) public {
+    function setNFTRented(uint256 tokenId, bool isRented) public {
         require(_exists(tokenId), "El token no existe");
-        require(
-            ownerOf(tokenId) == owner,
-            "El token no pertenece al propietario"
-        );
         _cars[tokenId].isRented = isRented;
     }
 

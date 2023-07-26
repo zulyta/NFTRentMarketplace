@@ -1,7 +1,6 @@
 require('dotenv').config();
 const { getRole, verify, ex, printAddress, deploySC } = require('../utils');
 
-var DEFAULT_ADMIN_ROLE = getRole('DEFAULT_ADMIN_ROLE');
 var PAUSER_ROLE = getRole('PAUSER_ROLE');
 var UPGRADER_ROLE = getRole('UPGRADER_ROLE');
 var gnosisSafe = process.env.GNOSIS_SAFE_ADDRESS_GOERLI;
@@ -17,13 +16,6 @@ async function deployRentCarGoerli() {
   let implementation = await printAddress(
     'RentCarV2_2',
     rentCarContract.address
-  );
-
-  await ex(
-    rentCarContract,
-    'grantRole',
-    [DEFAULT_ADMIN_ROLE, relayerAddress],
-    'Error granting DEFAULT_ADMIN_ROLE'
   );
 
   await ex(

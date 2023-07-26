@@ -135,7 +135,6 @@
         </template>
       </UCard>
     </UModal>
-    <UNotifications />
   </div>
 </template>
 <script setup>
@@ -209,23 +208,6 @@ const createNft = async () => {
           isLoading.value = false;
           txHash.value = tx.hash;
           isOpen.value = true;
-        }
-
-        if (tx.errorCode) {
-          toast.add({
-            title: 'Error en la transacción',
-            description: tx.context + ' Código de error: ' + tx.errorCode,
-            icon: 'i-heroicons-x-circle',
-
-            ui: {
-              progress: {
-                background: 'bg-red-500',
-              },
-              icon: {
-                color: 'bg-red-500',
-              },
-            },
-          });
         }
 
         isLoading.value = false;

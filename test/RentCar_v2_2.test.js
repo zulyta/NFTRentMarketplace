@@ -52,29 +52,22 @@ describe('RentCar_v2_2 testing', function () {
       data.lateReturnInterestPerDay
     );
 
-    return { carMinted, data };
+    return { data, carMinted, tx: await carMinted.wait(1) };
   }
 
   async function createNewRental(address, tokenId, value, days = 1) {
     const today = await time.latest();
     const data = {
       tokenId: tokenId,
-      ownerTokenId: owner.address,
       startDate: today,
       endDate: today + days * 86401, // Delay de 1 segundo para evitar errores
     };
 
     const rentalCreated = await rentCarContract
       .connect(address)
-      .createRental(
-        data.tokenId,
-        data.ownerTokenId,
-        data.startDate,
-        data.endDate,
-        {
-          value: value,
-        }
-      );
+      .createRental(data.tokenId, data.startDate, data.endDate, {
+        value: value,
+      });
 
     return { rentalCreated, data };
   }
@@ -104,7 +97,7 @@ describe('RentCar_v2_2 testing', function () {
       expect(rental.totalInterest).to.equal(0);
       expect(rental.active).to.equal(true);
       expect(rental.returned).to.equal(false);
-      expect(rental.mintTokenId).to.equal(100000);
+      expect(rental.mintTokenId).to.equal(1);
     });
 
     it('Should not create a new rental if the renter does not send enough funds', async function () {
@@ -141,7 +134,7 @@ describe('RentCar_v2_2 testing', function () {
       expect(rental.totalInterest).to.equal(totalInterest);
       expect(rental.active).to.equal(false);
       expect(rental.returned).to.equal(true);
-      expect(rental.mintTokenId).to.equal(100000);
+      expect(rental.mintTokenId).to.equal(1);
     });
 
     it('Should not return a rental if the rental is not active', async function () {

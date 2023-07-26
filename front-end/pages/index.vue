@@ -8,6 +8,14 @@
         :key="nft.tokenId"
       >
         <div class="nft-image">
+          <UBadge
+            color="purple"
+            variant="solid"
+            size="lg"
+            class="absolute z-50 top-2 right-2"
+            v-if="nft.isRented"
+            >Alquilado</UBadge
+          >
           <img :src="nft.imageURI" />
         </div>
         <div class="nft-footer">
@@ -62,7 +70,7 @@
                 :min="date"
                 type="date"
                 v-model="dates.startDate"
-                :disabled="isSuccess.disabled"
+                :disabled="isSuccess.disabled || selectedNFT.isRented"
               />
             </UFormGroup>
             <UFormGroup class="input" label="Fecha fin" required>
@@ -71,18 +79,20 @@
                 :min="minDate"
                 type="date"
                 v-model="dates.endDate"
-                :disabled="isSuccess.disabled"
+                :disabled="isSuccess.disabled || selectedNFT.isRented"
               />
             </UFormGroup>
           </div>
           <UButton
             :class="isSuccess.class"
-            label="Alquilar"
+            :label="!selectedNFT.isRented ? 'Alquilar' : 'Alquilado'"
             color="emerald"
             size="lg"
+            :variant="!selectedNFT.isRented ? 'solid' : 'outline'"
             block
             @click="createRent()"
             :loading="isLoading"
+            :disabled="selectedNFT.isRented"
           />
           <div
             :class="`flex items-center text-emerald-600 ${
@@ -103,12 +113,11 @@
         </template>
       </UCard>
     </UModal>
-    <UNotifications />
   </div>
 </template>
 <script setup>
 const { getNfts, nftList, rentNft } = useEthers();
-const toast = useToast();
+const config = useRuntimeConfig();
 const dayjs = useDayjs();
 
 const isOpen = ref(false);
@@ -135,16 +144,15 @@ const showDetailNFT = (nft) => {
   selectedNFT.value = nft;
 };
 
-const getPriceNFT = (value, price) => {
-  finalPriceNFT.value = BigInt(value) * price;
-};
+// const getPriceNFT = (value, price) => {
+//   finalPriceNFT.value = BigInt(value) * price;
+// };
 
 const createRent = async () => {
   try {
     const { startDate, endDate } = dates.value;
     const { tokenId } = selectedNFT.value;
     const data = {
-      carIndex: tokenId,
       tokenId: tokenId,
       startDate: dayjs(startDate).unix(),
       endDate: dayjs(endDate).unix(),
@@ -154,8 +162,8 @@ const createRent = async () => {
 
     const tx = await rentNft({
       ...data,
-      price: selectedNFT.value.price,
-      guarantee: selectedNFT.value.guarantee,
+      rentalPricePerDay: selectedNFT.value.rentalPricePerDay,
+      rentalGuarantee: selectedNFT.value.rentalGuarantee,
     });
 
     if (tx && !tx.errorCode) {
@@ -167,23 +175,6 @@ const createRent = async () => {
       };
     }
 
-    if (tx.errorCode) {
-      toast.add({
-        title: 'Error en la transacción',
-        description: tx.context + ' Código de error: ' + tx.errorCode,
-        icon: 'i-heroicons-x-circle',
-
-        ui: {
-          progress: {
-            background: 'bg-red-500',
-          },
-          icon: {
-            color: 'bg-red-500',
-          },
-        },
-      });
-    }
-
     isLoading.value = false;
   } catch (error) {
     console.log(error);
@@ -191,6 +182,6 @@ const createRent = async () => {
   }
 };
 const goScan = (hash) => {
-  window.open(`https://mumbai.polygonscan.com/tx/${hash}`, '_blank');
+  window.open(`${config.public.ETHERSCAN_GOERLI}/tx/${hash}`, '_blank');
 };
 </script>

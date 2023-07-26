@@ -17,6 +17,11 @@ export default defineNuxtConfig({
     ui: {
     icons: ['heroicons'],
   },
+
+  dayjs: {
+    plugins: ['bigIntSupport'],
+  },
+
   colorMode: {
     preference: 'light',
     fallback: 'light',
