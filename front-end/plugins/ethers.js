@@ -1,16 +1,16 @@
 import { ethers } from 'ethers';
 import { getParsedEthersError } from '@enzoferey/ethers-error-parser';
-import nftTknAbi from '../../artifacts/contracts/NFT.sol/NFT.json';
-import rentCarTknAbi from '../../artifacts/contracts/RentCar.sol/RentCar.json';
-import addresses from '@/content/addresses.json';
-
-const nftTokenAddress = addresses.nft;
-const rentCarAddress = addresses.rentCar;
+import nftTknAbi from '../../artifacts/contracts/NFTv2_2.sol/NFTv2_2.json';
+import rentCarTknAbi from '../../artifacts/contracts/RentCarV2_2.sol/RentCarV2_2.json';
 
 export default defineNuxtPlugin({
   name: 'ethers-config',
   enforce: 'pre', // or 'post'
   async setup(nuxtApp) {
+    const config = useRuntimeConfig();
+    const nftTokenAddress = config.public.NFT_PROXY_ADDRESS_GOERLI;
+    const rentCarAddress = config.public.RENTCAR_PROXY_ADDRESS_GOERLI;
+
     const provider = ref(null);
     const currentAccount = ref(null);
     const currentAccountBalance = ref(0);
@@ -81,8 +81,8 @@ export default defineNuxtPlugin({
         if (checkIfMetaMaskIsInstalled()) {
           const browserProvider = new ethers.BrowserProvider(window.ethereum);
           const alchemyProvider = new ethers.AlchemyProvider(
-            'matic-mumbai',
-            'G4-y-BXRg4lnQIPRzoKQLOJyh1joSAue'
+            `${config.public.ALCHEMY_PROVIDER_NETWORK}`,
+            `${config.public.ALCHEMY_API_KEY}`
           );
           const browserProviderSigner = await browserProvider.getSigner();
 
@@ -103,16 +103,18 @@ export default defineNuxtPlugin({
         const contract = await configContract(nftTokenAddress, nftTknAbi.abi);
 
         const data = await contract.getCars();
-        data.forEach(async (element) => {
-          const tokenURI = await contract.tokenURI(element.tokenId);
+
+        data.forEach(async (car) => {
           var object = {
-            tokenId: Number(element.tokenId),
-            image: tokenURI,
-            nameAuto: element.nameAuto,
-            features: element.features,
-            price: element.price,
-            guarantee: element.guarantee,
-            interestRate: element.interestRate,
+            tokenId: Number(car.tokenId),
+            name: car.name,
+            imageURI: car.imageURI,
+            features: car.features,
+            licensePlate: car.licensePlate,
+            rentalPricePerDay: car.rentalPricePerDay,
+            rentalGuarantee: car.rentalGuarantee,
+            lateReturnInterestPerDay: car.lateReturnInterestPerDay,
+            isRented: car.isRented,
           };
           nftList.value.push(object);
         });
@@ -129,14 +131,15 @@ export default defineNuxtPlugin({
           nftTknAbi.abi,
           true
         );
-        const tx = await contract.safeMintOwner(
-          data.to,
-          data.uri,
-          data.nameAuto,
+        const tx = await contract.mintCarNFT(
+          data.owner,
+          data.name,
+          data.imageURI,
           data.features,
-          data.price,
-          data.guarantee,
-          data.interestRate
+          data.licensePlate,
+          data.rentalPricePerDay,
+          data.rentalGuarantee,
+          data.lateReturnInterestPerDay
         );
         return tx;
       } catch (error) {

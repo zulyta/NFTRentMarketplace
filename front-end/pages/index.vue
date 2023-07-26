@@ -8,14 +8,15 @@
         :key="nft.tokenId"
       >
         <div class="nft-image">
-          <img :src="nft.image" />
+          <img :src="nft.imageURI" />
         </div>
         <div class="nft-footer">
-          <h3>{{ nft.nameAuto }}</h3>
+          <h3>{{ nft.name }}</h3>
           <h4># {{ nft.tokenId }}</h4>
           <UButton
-            label="Alquilar NFT"
+            label="Ver detalle de NFT"
             color="emerald"
+            variant="soft"
             size="lg"
             block
             @click="showDetailNFT(nft)"
@@ -23,24 +24,39 @@
         </div>
       </div>
     </div>
-    <UModal v-model="isOpen">
-      <div class="modal-content">
-        <div class="nft-detail">
-          <div class="nft-header">
-            <h3>{{ selectedNFT.nameAuto }}</h3>
-            <img :src="selectedNFT.image" />
+    <UModal :ui="{ width: 'max-w-2xl' }" v-model="isOpen" prevent-close>
+      <UCard>
+        <template #header>
+          <div class="modal-header">
+            <h3>{{ selectedNFT.name }}</h3>
+            <UButton
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-x-mark-20-solid"
+              class="-my-1"
+              @click="isOpen = false"
+            />
           </div>
+        </template>
+        <div class="nft-detail">
+          <img :src="selectedNFT.imageURI" />
           <ul>
-            <li><b>Características:</b> {{ selectedNFT.features }}</li>
-            <li><b>Precio:</b> {{ selectedNFT.price }}</li>
-            <li><b>Garantía:</b> {{ selectedNFT.guarantee }}</li>
-            <li><b>Interés:</b> {{ selectedNFT.interestRate }}</li>
+            <li><span>Características:</span> {{ selectedNFT.features }}</li>
+            <li><span>Placa:</span> {{ selectedNFT.licensePlate }}</li>
+            <li>
+              <span>Precio de alquiler por día:</span>
+              {{ selectedNFT.rentalPricePerDay }}
+            </li>
+            <li><span>Garantía:</span> {{ selectedNFT.rentalGuarantee }}</li>
+            <li>
+              <span>Interés diario por devolución tardía:</span>
+              {{ selectedNFT.lateReturnInterestPerDay }}
+            </li>
           </ul>
         </div>
-        <hr />
-        <footer>
+        <template #footer>
           <div class="nft-inputs">
-            <UFormGroup class="input" label="Inicio" required>
+            <UFormGroup class="input" label="Fecha de inicio" required>
               <UInput
                 placeholder="Selecciona una fecha de inicio"
                 :min="date"
@@ -49,7 +65,7 @@
                 :disabled="isSuccess.disabled"
               />
             </UFormGroup>
-            <UFormGroup class="input" label="Fin" required>
+            <UFormGroup class="input" label="Fecha fin" required>
               <UInput
                 placeholder="Selecciona una fecha de finalización"
                 :min="minDate"
@@ -84,8 +100,8 @@
               @click="goScan(isSuccess.txHash)"
             />
           </div>
-        </footer>
-      </div>
+        </template>
+      </UCard>
     </UModal>
     <UNotifications />
   </div>
