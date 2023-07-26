@@ -8,14 +8,23 @@
         :key="nft.tokenId"
       >
         <div class="nft-image">
-          <img :src="nft.image" />
+          <UBadge
+            color="purple"
+            variant="solid"
+            size="lg"
+            class="absolute z-50 top-2 right-2"
+            v-if="nft.isRented"
+            >Alquilado</UBadge
+          >
+          <img :src="nft.imageURI" />
         </div>
         <div class="nft-footer">
-          <h3>{{ nft.nameAuto }}</h3>
+          <h3>{{ nft.name }}</h3>
           <h4># {{ nft.tokenId }}</h4>
           <UButton
-            label="Alquilar NFT"
+            label="Ver detalle de NFT"
             color="emerald"
+            variant="soft"
             size="lg"
             block
             @click="showDetailNFT(nft)"
@@ -23,50 +32,67 @@
         </div>
       </div>
     </div>
-    <UModal v-model="isOpen">
-      <div class="modal-content">
-        <div class="nft-detail">
-          <div class="nft-header">
-            <h3>{{ selectedNFT.nameAuto }}</h3>
-            <img :src="selectedNFT.image" />
+    <UModal :ui="{ width: 'max-w-2xl' }" v-model="isOpen" prevent-close>
+      <UCard>
+        <template #header>
+          <div class="modal-header">
+            <h3>{{ selectedNFT.name }}</h3>
+            <UButton
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-x-mark-20-solid"
+              class="-my-1"
+              @click="isOpen = false"
+            />
           </div>
+        </template>
+        <div class="nft-detail">
+          <img :src="selectedNFT.imageURI" />
           <ul>
-            <li><b>Características:</b> {{ selectedNFT.features }}</li>
-            <li><b>Precio:</b> {{ selectedNFT.price }}</li>
-            <li><b>Garantía:</b> {{ selectedNFT.guarantee }}</li>
-            <li><b>Interés:</b> {{ selectedNFT.interestRate }}</li>
+            <li><span>Características:</span> {{ selectedNFT.features }}</li>
+            <li><span>Placa:</span> {{ selectedNFT.licensePlate }}</li>
+            <li>
+              <span>Precio de alquiler por día:</span>
+              {{ selectedNFT.rentalPricePerDay }}
+            </li>
+            <li><span>Garantía:</span> {{ selectedNFT.rentalGuarantee }}</li>
+            <li>
+              <span>Interés diario por devolución tardía:</span>
+              {{ selectedNFT.lateReturnInterestPerDay }}
+            </li>
           </ul>
         </div>
-        <hr />
-        <footer>
+        <template #footer>
           <div class="nft-inputs">
-            <UFormGroup class="input" label="Inicio" required>
+            <UFormGroup class="input" label="Fecha de inicio" required>
               <UInput
                 placeholder="Selecciona una fecha de inicio"
                 :min="date"
                 type="date"
                 v-model="dates.startDate"
-                :disabled="isSuccess.disabled"
+                :disabled="isSuccess.disabled || selectedNFT.isRented"
               />
             </UFormGroup>
-            <UFormGroup class="input" label="Fin" required>
+            <UFormGroup class="input" label="Fecha fin" required>
               <UInput
                 placeholder="Selecciona una fecha de finalización"
                 :min="minDate"
                 type="date"
                 v-model="dates.endDate"
-                :disabled="isSuccess.disabled"
+                :disabled="isSuccess.disabled || selectedNFT.isRented"
               />
             </UFormGroup>
           </div>
           <UButton
             :class="isSuccess.class"
-            label="Alquilar"
+            :label="!selectedNFT.isRented ? 'Alquilar' : 'Alquilado'"
             color="emerald"
             size="lg"
+            :variant="!selectedNFT.isRented ? 'solid' : 'outline'"
             block
             @click="createRent()"
             :loading="isLoading"
+            :disabled="selectedNFT.isRented"
           />
           <div
             :class="`flex items-center text-emerald-600 ${
@@ -84,15 +110,14 @@
               @click="goScan(isSuccess.txHash)"
             />
           </div>
-        </footer>
-      </div>
+        </template>
+      </UCard>
     </UModal>
-    <UNotifications />
   </div>
 </template>
 <script setup>
 const { getNfts, nftList, rentNft } = useEthers();
-const toast = useToast();
+const config = useRuntimeConfig();
 const dayjs = useDayjs();
 
 const isOpen = ref(false);
@@ -119,16 +144,15 @@ const showDetailNFT = (nft) => {
   selectedNFT.value = nft;
 };
 
-const getPriceNFT = (value, price) => {
-  finalPriceNFT.value = BigInt(value) * price;
-};
+// const getPriceNFT = (value, price) => {
+//   finalPriceNFT.value = BigInt(value) * price;
+// };
 
 const createRent = async () => {
   try {
     const { startDate, endDate } = dates.value;
     const { tokenId } = selectedNFT.value;
     const data = {
-      carIndex: tokenId,
       tokenId: tokenId,
       startDate: dayjs(startDate).unix(),
       endDate: dayjs(endDate).unix(),
@@ -138,8 +162,8 @@ const createRent = async () => {
 
     const tx = await rentNft({
       ...data,
-      price: selectedNFT.value.price,
-      guarantee: selectedNFT.value.guarantee,
+      rentalPricePerDay: selectedNFT.value.rentalPricePerDay,
+      rentalGuarantee: selectedNFT.value.rentalGuarantee,
     });
 
     if (tx && !tx.errorCode) {
@@ -151,23 +175,6 @@ const createRent = async () => {
       };
     }
 
-    if (tx.errorCode) {
-      toast.add({
-        title: 'Error en la transacción',
-        description: tx.context + ' Código de error: ' + tx.errorCode,
-        icon: 'i-heroicons-x-circle',
-
-        ui: {
-          progress: {
-            background: 'bg-red-500',
-          },
-          icon: {
-            color: 'bg-red-500',
-          },
-        },
-      });
-    }
-
     isLoading.value = false;
   } catch (error) {
     console.log(error);
@@ -175,6 +182,6 @@ const createRent = async () => {
   }
 };
 const goScan = (hash) => {
-  window.open(`https://mumbai.polygonscan.com/tx/${hash}`, '_blank');
+  window.open(`${config.public.ETHERSCAN_GOERLI}/tx/${hash}`, '_blank');
 };
 </script>

@@ -4,5 +4,6 @@
     <div class="container">
       <slot />
     </div>
+    <UNotifications />
   </main>
 </template>

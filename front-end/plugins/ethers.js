@@ -1,21 +1,24 @@
 import { ethers } from 'ethers';
 import { getParsedEthersError } from '@enzoferey/ethers-error-parser';
-import nftTknAbi from '../../artifacts/contracts/NFT.sol/NFT.json';
-import rentCarTknAbi from '../../artifacts/contracts/RentCar.sol/RentCar.json';
-import addresses from '@/content/addresses.json';
-
-const nftTokenAddress = addresses.nft;
-const rentCarAddress = addresses.rentCar;
+import nftTknAbi from '../../artifacts/contracts/NFTv2_2.sol/NFTv2_2.json';
+import rentCarTknAbi from '../../artifacts/contracts/RentCarV2_2.sol/RentCarV2_2.json';
 
 export default defineNuxtPlugin({
   name: 'ethers-config',
   enforce: 'pre', // or 'post'
   async setup(nuxtApp) {
+    const config = useRuntimeConfig();
+    const toast = useToast();
+
+    const nftTokenAddress = config.public.NFT_PROXY_ADDRESS_GOERLI;
+    const rentCarAddress = config.public.RENTCAR_PROXY_ADDRESS_GOERLI;
+
     const provider = ref(null);
     const currentAccount = ref(null);
     const currentAccountBalance = ref(0);
     const nftList = ref([]);
     const myNftList = ref([]);
+    const myRentalList = ref([]);
 
     function checkIfMetaMaskIsInstalled() {
       if (window.ethereum) {
@@ -44,6 +47,7 @@ export default defineNuxtPlugin({
         }
       } catch (error) {
         const parsedError = getParsedEthersError(error);
+        toastError(parsedError);
         return parsedError;
       }
     }
@@ -58,6 +62,7 @@ export default defineNuxtPlugin({
         currentAccount.value = accounts[0];
       } catch (error) {
         const parsedError = getParsedEthersError(error);
+        toastError(parsedError);
         return parsedError;
       }
     }
@@ -72,6 +77,7 @@ export default defineNuxtPlugin({
         currentAccountBalance.value = ethers.formatEther(balance);
       } catch (error) {
         const parsedError = getParsedEthersError(error);
+        toastError(parsedError);
         return parsedError;
       }
     }
@@ -81,8 +87,8 @@ export default defineNuxtPlugin({
         if (checkIfMetaMaskIsInstalled()) {
           const browserProvider = new ethers.BrowserProvider(window.ethereum);
           const alchemyProvider = new ethers.AlchemyProvider(
-            'matic-mumbai',
-            'G4-y-BXRg4lnQIPRzoKQLOJyh1joSAue'
+            `${config.public.ALCHEMY_PROVIDER_NETWORK}`,
+            `${config.public.ALCHEMY_API_KEY}`
           );
           const browserProviderSigner = await browserProvider.getSigner();
 
@@ -94,6 +100,7 @@ export default defineNuxtPlugin({
         }
       } catch (error) {
         const parsedError = getParsedEthersError(error);
+        toastError(parsedError);
         return parsedError;
       }
     }
@@ -103,21 +110,26 @@ export default defineNuxtPlugin({
         const contract = await configContract(nftTokenAddress, nftTknAbi.abi);
 
         const data = await contract.getCars();
-        data.forEach(async (element) => {
-          const tokenURI = await contract.tokenURI(element.tokenId);
-          var object = {
-            tokenId: Number(element.tokenId),
-            image: tokenURI,
-            nameAuto: element.nameAuto,
-            features: element.features,
-            price: element.price,
-            guarantee: element.guarantee,
-            interestRate: element.interestRate,
-          };
-          nftList.value.push(object);
+
+        data.forEach(async (car) => {
+          if (car.name != '') {
+            var object = {
+              tokenId: Number(car.tokenId),
+              name: car.name,
+              imageURI: car.imageURI,
+              features: car.features,
+              licensePlate: car.licensePlate,
+              rentalPricePerDay: car.rentalPricePerDay,
+              rentalGuarantee: car.rentalGuarantee,
+              lateReturnInterestPerDay: car.lateReturnInterestPerDay,
+              isRented: car.isRented,
+            };
+            nftList.value.push(object);
+          }
         });
       } catch (error) {
         const parsedError = getParsedEthersError(error);
+        toastError(parsedError);
         return parsedError;
       }
     }
@@ -129,18 +141,20 @@ export default defineNuxtPlugin({
           nftTknAbi.abi,
           true
         );
-        const tx = await contract.safeMintOwner(
-          data.to,
-          data.uri,
-          data.nameAuto,
+        const tx = await contract.mintCarNFT(
+          data.owner,
+          data.name,
+          data.imageURI,
           data.features,
-          data.price,
-          data.guarantee,
-          data.interestRate
+          data.licensePlate,
+          data.rentalPricePerDay,
+          data.rentalGuarantee,
+          data.lateReturnInterestPerDay
         );
         return tx;
       } catch (error) {
         const parsedError = getParsedEthersError(error);
+        toastError(parsedError);
         return parsedError;
       }
     }
@@ -155,11 +169,11 @@ export default defineNuxtPlugin({
 
         const rentalDuration = (data.endDate - data.startDate) / 86400;
         const rentalPrice =
-          ethers.toBigInt(data.price) * ethers.toBigInt(rentalDuration) +
-          ethers.toBigInt(data.guarantee);
+          ethers.toBigInt(data.rentalPricePerDay) *
+            ethers.toBigInt(rentalDuration) +
+          ethers.toBigInt(data.rentalGuarantee);
 
         const tx = await contract.createRental(
-          data.carIndex,
           data.tokenId,
           data.startDate,
           data.endDate,
@@ -168,6 +182,7 @@ export default defineNuxtPlugin({
         return tx;
       } catch (error) {
         const parsedError = getParsedEthersError(error);
+        toastError(parsedError);
         return parsedError;
       }
     }
@@ -175,25 +190,26 @@ export default defineNuxtPlugin({
     async function getMyNfts() {
       try {
         const contract = await configContract(nftTokenAddress, nftTknAbi.abi);
-        let eventFilter = contract.filters.Transfer(
+        const eventFilter = contract.filters.Transfer(
           '0x0000000000000000000000000000000000000000',
           null,
           null
         );
-        let events = await contract.queryFilter(eventFilter);
+        const events = await contract.queryFilter(eventFilter);
         events.forEach(async (event) => {
           if (event.args[1].toLowerCase() === currentAccount.value) {
-            const tokenURI = await contract.tokenURI(parseInt(event.args[2]));
             const data = await contract.getCar(parseInt(event.args[2]));
-            if (data) {
+            if (data && data.name != '') {
               var object = {
                 tokenId: parseInt(event.args[2]),
-                image: tokenURI,
-                nameAuto: data.nameAuto,
+                name: data.name,
+                imageURI: data.imageURI,
                 features: data.features,
-                price: data.price,
-                guarantee: data.guarantee,
-                interestRate: data.interestRate,
+                licensePlate: data.licensePlate,
+                rentalPricePerDay: data.rentalPricePerDay,
+                rentalGuarantee: data.rentalGuarantee,
+                lateReturnInterestPerDay: data.lateReturnInterestPerDay,
+                isRented: data.isRented,
               };
               myNftList.value.push(object);
             }
@@ -201,31 +217,99 @@ export default defineNuxtPlugin({
         });
       } catch (error) {
         const parsedError = getParsedEthersError(error);
+        toastError(parsedError);
         return parsedError;
       }
     }
 
     async function getMyNftsRented() {
       try {
-        const contract = await configContract(
+        const rentCarContract = await configContract(
           rentCarAddress,
           rentCarTknAbi.abi
         );
-        const rentals = await contract.getRenterRentals(currentAccount.value);
-        // let events = await contract.queryFilter(eventFilter);
 
-        console.log(rentals);
+        const nftContract = await configContract(
+          nftTokenAddress,
+          nftTknAbi.abi
+        );
 
-        // events.forEach(async (event) => {
-        //   if (event.args[1].toLowerCase() === currentAccount.value) {
-        //     const tokenURI = await contract.tokenURI(parseInt(event.args[2]));
-        //     const data = await contract.getCar(parseInt(event.args[2]));
-        //   }
-        // });
+        const rentals = await rentCarContract.getRenterRentals(
+          currentAccount.value
+        );
+        rentals.forEach(async (rentalId) => {
+          const rental = await rentCarContract.getRental(parseInt(rentalId));
+          const nft = await nftContract.getCar(parseInt(rental[0]));
+          var object = {
+            rentalId: rentalId,
+            tokenId: rental.tokenId,
+            startDate: rental.startDate,
+            endDate: rental.endDate,
+            totalDays: rental.totalDays,
+            totalPrice: rental.totalPrice,
+            active: rental.active,
+            returned: rental.returned,
+            name: nft.name,
+            imageURI: nft.imageURI,
+            features: nft.features,
+            licensePlate: nft.licensePlate,
+          };
+          myRentalList.value.push(object);
+        });
       } catch (error) {
         const parsedError = getParsedEthersError(error);
+        toastError(parsedError);
         return parsedError;
       }
+    }
+
+    async function returnNft(rentalId) {
+      try {
+        const contract = await configContract(
+          rentCarAddress,
+          rentCarTknAbi.abi,
+          true
+        );
+        const tx = await contract.returnRental(rentalId);
+        return tx;
+      } catch (error) {
+        const parsedError = getParsedEthersError(error);
+        toastError(parsedError);
+        return parsedError;
+      }
+    }
+
+    async function returnGuarantee(rentalId) {
+      try {
+        const contract = await configContract(
+          rentCarAddress,
+          rentCarTknAbi.abi,
+          true
+        );
+        const tx = await contract.guaranteeRefund(rentalId);
+        return tx;
+      } catch (error) {
+        const parsedError = getParsedEthersError(error);
+        toastError(parsedError);
+        return parsedError;
+      }
+    }
+
+    function toastError(error) {
+      toast.add({
+        title: 'Error en la transacción',
+        description: error.context + ' Código de error: ' + error.errorCode,
+        icon: 'i-heroicons-x-circle',
+
+        ui: {
+          progress: {
+            background: 'bg-red-500',
+          },
+          icon: {
+            color: 'bg-red-500',
+          },
+        },
+      });
     }
 
     const plugin = {
@@ -243,6 +327,9 @@ export default defineNuxtPlugin({
       getMyNfts,
       myNftList,
       getMyNftsRented,
+      myRentalList,
+      returnNft,
+      returnGuarantee,
     };
 
     nuxtApp.provide('ethers', plugin);

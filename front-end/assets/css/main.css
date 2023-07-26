@@ -72,6 +72,29 @@
       bg-indigo-600
   }
 
+  .nft-list-empty {
+    @apply
+      flex
+      flex-col
+      items-center
+      justify-center
+      text-center
+      text-gray-500
+      py-10;
+  }
+
+  .nft-list-empty h3 {
+    @apply
+      font-semibold
+      mb-2;
+  }
+
+  .nft-list-empty h4 {
+    @apply
+      text-sm
+      mb-8;
+  }
+
   .nft-list {
     @apply
       my-6
@@ -134,21 +157,29 @@
       mt-4
   }
 
-  .modal-content {
+  .modal-header {
     @apply
-      p-4;
+      flex
+      items-center
+      justify-between;
+  }
+
+  .modal-header h3{
+    @apply
+    text-lg
+    text-center
+    font-semibold
+    w-full;
   }
 
   .nft-detail {
     @apply
-      flex
-      mb-4;
+      flex;
   }
 
-  .nft-detail h3 {
+  .nft-detail img {
     @apply
-      text-lg
-      mb-4;
+      w-1/2;
   }
 
   .nft-detail ul {
@@ -156,11 +187,24 @@
       ml-4;
   }
 
+  .nft-detail li {
+    @apply
+      flex
+      flex-col
+      mb-4
+      text-sm;
+  }
+
+  .nft-detail span {
+    @apply
+      font-semibold;
+  }
+
   .nft-inputs {
     @apply
       flex
       gap-x-4
-      my-4;
+      mb-4;
   }
   
   .nft-inputs .input {
@@ -196,6 +240,17 @@
       border-2
       border-gray-300
       m-auto;
+  }
+
+  .group-input {
+    @apply
+      flex
+      gap-x-4;
+  }
+
+  .group-input .input {
+    @apply
+      flex-1;
   }
 
 }

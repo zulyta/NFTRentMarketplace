@@ -83,6 +83,15 @@ describe('NFT_v2_2 testing', function () {
       );
     });
 
+    it('Should mint a new rental token', async function () {
+      await createCarNFT();
+      const tx = await nftContract.mintRentalToken(owner.address);
+      await tx.wait(1);
+
+      expect(await nftContract.ownerOf(1)).to.equal(owner.address);
+      expect(await nftContract.totalSupply()).to.equal(2);
+    });
+
     it('Should get a list of all car NFTs', async function () {
       await createCarNFT();
       await createCarNFT();
