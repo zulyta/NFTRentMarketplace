@@ -70,7 +70,11 @@
                 :min="date"
                 type="date"
                 v-model="dates.startDate"
-                :disabled="isSuccess.disabled || selectedNFT.isRented"
+                :disabled="
+                  isSuccess.disabled ||
+                  selectedNFT.isRented ||
+                  selectedNFT.isReadyForReturn
+                "
               />
             </UFormGroup>
             <UFormGroup class="input" label="Fecha fin" required>
@@ -79,7 +83,11 @@
                 :min="minDate"
                 type="date"
                 v-model="dates.endDate"
-                :disabled="isSuccess.disabled || selectedNFT.isRented"
+                :disabled="
+                  isSuccess.disabled ||
+                  selectedNFT.isRented ||
+                  selectedNFT.isReadyForReturn
+                "
               />
             </UFormGroup>
           </div>
@@ -94,21 +102,26 @@
             :loading="isLoading"
             :disabled="selectedNFT.isRented"
           />
-          <div
-            :class="`flex items-center text-emerald-600 ${
-              isSuccess.class ? 'block' : 'hidden'
-            }`"
-          >
-            <UIcon name="i-heroicons-check" class="w-6 h-6" />
-            <span class="ml-2">Alquiler realizado con éxito</span>
+          <div>
+            <div
+              :class="`flex items-center text-emerald-600 ${
+                isSuccess.class ? 'block' : 'hidden'
+              }`"
+            >
+              <UIcon name="i-heroicons-check" class="w-6 h-6" />
+              <span class="ml-2">Alquiler realizado con éxito</span>
 
-            <UButton
-              label="Ver transacción"
-              color="white"
-              icon="i-heroicons-viewfinder-circle"
-              class="ml-auto"
-              @click="goScan(isSuccess.txHash)"
-            />
+              <UButton
+                label="Ver transacción"
+                color="white"
+                icon="i-heroicons-viewfinder-circle"
+                class="ml-auto"
+                @click="goScan(isSuccess.txHash)"
+              />
+            </div>
+            <span class="text-xs text-gray-600"
+              >* La transacción podría tardar unos minutos en confirmarse.</span
+            >
           </div>
         </template>
       </UCard>
@@ -181,6 +194,7 @@ const createRent = async () => {
     isLoading.value = false;
   }
 };
+
 const goScan = (hash) => {
   window.open(`${config.public.ETHERSCAN_GOERLI}/tx/${hash}`, '_blank');
 };

@@ -83,31 +83,37 @@
         <template #footer>
           <UButton
             :class="isSuccess.class"
-            label="Devolver NFT"
+            :label="
+              !selectedRental.returned ? 'Devolver NFT' : 'Carro devuelto'
+            "
             color="emerald"
             size="lg"
+            :variant="!selectedRental.returned ? 'solid' : 'outline'"
             block
             @click="finishRent()"
             :loading="isLoading"
-            v-if="!selectedRental.returned"
+            :disabled="selectedRental.returned"
           />
-          <UButton
-            label="Reclamar monto de garantía"
-            color="blue"
-            size="lg"
-            block
-            @click="withdrawal()"
-            :loading="isLoading"
-            v-else
-          />
-          <div
-            :class="`flex items-center text-emerald-600 ${
-              isSuccess.class ? 'block' : 'hidden'
-            }`"
-          >
-            <UIcon name="i-heroicons-check" class="w-6 h-6" />
-            <span class="ml-2"
-              >La devolución del carro se realizó con éxito</span
+          <div v-if="isSuccess.class">
+            <div
+              :class="`flex items-center text-emerald-600 ${
+                isSuccess.class ? 'block' : 'hidden'
+              }`"
+            >
+              <UIcon name="i-heroicons-check" class="w-6 h-6" />
+              <span class="ml-2"
+                >La devolución del carro se realizó con éxito</span
+              >
+              <UButton
+                label="Ver transacción"
+                color="white"
+                icon="i-heroicons-viewfinder-circle"
+                class="ml-auto"
+                @click="goScan(isSuccess.txHash)"
+              />
+            </div>
+            <span class="text-xs text-gray-600"
+              >* La transacción podría tardar unos minutos en confirmarse.</span
             >
           </div>
         </template>
@@ -118,6 +124,7 @@
 <script setup>
 const { getMyNftsRented, myRentalList, returnNft, returnGuarantee } =
   useEthers();
+const config = useRuntimeConfig();
 const router = useRouter();
 const dayjs = useDayjs();
 
@@ -150,6 +157,7 @@ const finishRent = async () => {
       isLoading.value = false;
       isSuccess.value = {
         class: 'hidden',
+        txHash: tx.hash,
       };
     }
 
@@ -160,19 +168,7 @@ const finishRent = async () => {
   }
 };
 
-const withdrawal = async () => {
-  try {
-    isLoading.value = true;
-
-    const tx = await returnGuarantee(selectedRental.value.rentalId);
-
-    if (tx && !tx.errorCode) {
-      isLoading.value = false;
-    }
-
-    isLoading.value = false;
-  } catch (error) {
-    isLoading.value = false;
-  }
+const goScan = (hash) => {
+  window.open(`${config.public.ETHERSCAN_GOERLI}/tx/${hash}`, '_blank');
 };
 </script>

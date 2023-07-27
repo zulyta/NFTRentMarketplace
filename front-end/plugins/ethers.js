@@ -210,6 +210,7 @@ export default defineNuxtPlugin({
                 rentalGuarantee: data.rentalGuarantee,
                 lateReturnInterestPerDay: data.lateReturnInterestPerDay,
                 isRented: data.isRented,
+                isReadyForReturn: data.isReadyForReturn,
               };
               myNftList.value.push(object);
             }
@@ -279,15 +280,23 @@ export default defineNuxtPlugin({
       }
     }
 
-    async function returnGuarantee(rentalId) {
+    async function returnGuarantee(tokenId) {
       try {
         const contract = await configContract(
           rentCarAddress,
           rentCarTknAbi.abi,
           true
         );
-        const tx = await contract.guaranteeRefund(rentalId);
-        return tx;
+
+        const rentals = await contract.getCarRentals(currentAccount.value);
+
+        rentals.forEach(async (rentalId) => {
+          const rental = await contract.getRental(rentalId);
+          if (rental.tokenId == tokenId) {
+            const tx = await contract.guaranteeRefund(rentalId);
+            return tx;
+          }
+        });
       } catch (error) {
         const parsedError = getParsedEthersError(error);
         toastError(parsedError);

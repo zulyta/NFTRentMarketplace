@@ -300,8 +300,8 @@ contract RentCarV2_2 is
         Rental storage rental = _rentals[rentalId];
         NFTv2_2.Car memory car = nftContract.getCar(rental.tokenId);
 
-        uint256 returnAmount = calculateReturnGarantee(rentalId);
-        require(returnAmount > 0, "No hay monto de devolucion para reembolsar");
+        uint256 returnAmount = calculateReturnInterest(rentalId);
+        // require(returnAmount > 0, "No hay monto de devolucion para reembolsar");
 
         require(car.isReadyForReturn == true, "No listo para devolucion");
 
@@ -312,6 +312,8 @@ contract RentCarV2_2 is
         );
 
         payable(rental.renter).transfer(returnAmount);
+
+        nftContract.setNFTRented(rental.tokenId, false, false);
     }
 
     // @dev Función pública de solo lectura para obtener información detallada sobre un alquiler específico a partir de su ID.
