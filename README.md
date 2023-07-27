@@ -22,7 +22,7 @@ El proyecto tiene como objetivo brindar un Marketplace descentralizado y seguro 
   - Gnosis Safe
   - Infura (IPFS)
     
-### Instalacion   
+### Instalación   
 1. Clone el repositorio desde GitHub:
 
 ```bash
