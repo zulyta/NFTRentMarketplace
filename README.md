@@ -12,7 +12,7 @@ El proyecto tiene como objetivo brindar un Marketplace descentralizado y seguro 
 ![image](https://github.com/zulyta/NFTRentMarketplace/assets/32932810/ce97cf53-a7e0-4187-8c90-e2cc58f353da)
 
 ## Diagramas UML
-# Diagramas de Secuencia
+### Diagramas de Secuencia
 ![Dsecuencia](https://www.plantuml.com/plantuml/png/ZLN1RXCn4BtlLumg8S411DSSKAkWdYXKfU8KgPhOiyN2QozZRqNvfnuGdv0VOxnUf-icJNfB9c_cpRoPvvo6Y1o7pZODgkWPJYxPzuOaQZneid0sH7y26A1__A5WpvZ9QKonZC4Sg42V1jhypRKka7zIx2qg6k5w8ETlkiTeq_J8qIZJeujmSixUHIauWjlfImrPIf0nUlXoVZt2r1IuSMry1df5BYwHQpXBK25B1pC1tdxSqYvWoOGCJBScH4u30OesAoSa26X_3SOIDmKlkLKl9L_wX363x9ZVp44rOO8g9jH2ylgI1rfZOXMq2wYKsVnpRog-7JqNS9t0BR79p6YXhnSy3Q5yvw7Voz4qyxNMBNuZIuBo3XbQKZ_IKkcm64Nf1NnTos_4OmUIPqBldLbR2Yj7BkdJ4syUlFOGjZJQDqyBrHrzbksWBkkfwxvea9IsdwHUP-c-Pv8yk8TRP7Hnyu1PrfTLMQ9LWqMMS8Xv8KMzbPkF3GTgpezqfmoeJ27AxSsTQxA0xyIcDGh7pGFzDY8XLlKEY2WEQmrtKx8cwF6sQkROHLnbSo63HY6kKtUxtt_oPshe9aax4wPMB7nu_shbqeUiTFGHRKLmT5kLcxHfIN3AuChjTrLjxMUQNMvxnDosncO7zdHDExQUkJVD21Oh1vSzLkhN1IzyrZrx9ak2MZxUZmG-7RlHVcxDrcJzgaV_q6DnoLvH6AsfwSxR8JTNv3fo6qSElnmk15Ei0apHi_D03jQYQNxkjKcEeZIPnVne0OM8QqlAQ3nCK_oQA3g9USXgP-yR1CoZtH5B_RH216j2zFdDBmrfscOS-CDHavsa4XDQymUtkdathv46L1YyP31JUkuqlZiYvmMoclQTpqTA3sJbs_tioMoQKwamTBRv3m00)
 
 ## Getting Started 
@@ -20,8 +20,7 @@ El proyecto tiene como objetivo brindar un Marketplace descentralizado y seguro 
   - Open Zeppelin (Relayer)
   - Gnosis Safe
   - Infura (IPFS)
-  - Nuxt 3.6.5
-  - Vue
+    
 ### Instalacion   
 1. Clone el repositorio desde GitHub:
 
