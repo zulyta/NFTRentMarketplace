@@ -192,7 +192,7 @@ contract RentCarV2_2 is
         payable(marketplaceOwner).transfer(commission);
         payable(nftContract.ownerOf(tokenId)).transfer(amountToOwner);
 
-        nftContract.setNFTRented(tokenId, true);
+        nftContract.setNFTRented(tokenId, true, false);
 
         _rentalIdCounter.increment();
 
@@ -221,7 +221,7 @@ contract RentCarV2_2 is
 
         // nftContract.burnRentalToken(rental.mintTokenId); // Burn deshabilitado por required en SC NFT
 
-        nftContract.setNFTRented(rental.tokenId, false);
+        nftContract.setNFTRented(rental.tokenId, false, true);
 
         emit RentalReturned(msg.sender, rentalId, block.timestamp);
     }
@@ -259,17 +259,19 @@ contract RentCarV2_2 is
         uint256 rentalId
     ) public view returns (uint256) {
         Rental storage rental = _rentals[rentalId];
+        NFTv2_2.Car memory car = nftContract.getCar(rental.tokenId);
 
         if (block.timestamp > rental.endDate && rental.totalInterest == 0) {
-            NFTv2_2.Car memory car = nftContract.getCar(rental.tokenId);
-
             uint256 lateDays = block.timestamp.sub(rental.endDate).div(1 days);
 
             uint256 interest = lateDays.mul(
                 car.lateReturnInterestPerDay.div(100)
             );
 
-            if (interest >= car.rentalGuarantee) return car.rentalGuarantee;
+            if (
+                interest >= car.rentalGuarantee &&
+                block.timestamp < rental.endDate
+            ) return car.rentalGuarantee;
 
             uint256 amount = car.rentalGuarantee.sub(interest);
 
@@ -296,9 +298,12 @@ contract RentCarV2_2 is
     // @param rentalId El ID único del alquiler para el cual se quiere retirar la garantía.
     function guaranteeRefund(uint256 rentalId) external {
         Rental storage rental = _rentals[rentalId];
+        NFTv2_2.Car memory car = nftContract.getCar(rental.tokenId);
 
         uint256 returnAmount = calculateReturnGarantee(rentalId);
         require(returnAmount > 0, "No hay monto de devolucion para reembolsar");
+
+        require(car.isReadyForReturn == true, "No listo para devolucion");
 
         require(
             msg.sender == nftContract.ownerOf(rental.tokenId) &&

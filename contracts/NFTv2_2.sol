@@ -39,6 +39,7 @@ contract NFTv2_2 is
         uint256 rentalGuarantee;
         uint256 lateReturnInterestPerDay;
         bool isRented;
+        bool isReadyForReturn;
     }
 
     // @dev Lista de todos los tokens NFT de carro creados.
@@ -55,7 +56,8 @@ contract NFTv2_2 is
         uint256 rentalPricePerDay,
         uint256 rentalGuarantee,
         uint256 lateReturnInterestPerDay,
-        bool isRented
+        bool isRented,
+        bool isReadyForReturn
     );
 
     // @dev Inicializador del contrato
@@ -105,6 +107,7 @@ contract NFTv2_2 is
             rentalPricePerDay,
             rentalGuarantee,
             lateReturnInterestPerDay,
+            false,
             false
         );
 
@@ -120,6 +123,7 @@ contract NFTv2_2 is
             rentalPricePerDay,
             rentalGuarantee,
             lateReturnInterestPerDay,
+            false,
             false
         );
     }
@@ -144,9 +148,14 @@ contract NFTv2_2 is
     // @dev Función para actualizar el estado alquilado de un NFT.
     // @param tokenId El identificador único del token.
     // @param isRented El nuevo estado alquilado del token.
-    function setNFTRented(uint256 tokenId, bool isRented) public {
+    function setNFTRented(
+        uint256 tokenId,
+        bool isRented,
+        bool isReadyForReturn
+    ) public {
         require(_exists(tokenId), "El token no existe");
         _cars[tokenId].isRented = isRented;
+        _cars[tokenId].isReadyForReturn = isReadyForReturn;
     }
 
     // @dev Función para obtener los atributos de un token NFT.

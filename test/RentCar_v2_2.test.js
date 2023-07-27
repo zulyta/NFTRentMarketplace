@@ -171,6 +171,7 @@ describe('RentCar_v2_2 testing', function () {
         .mul(0)
         .mul(nft.data.lateReturnInterestPerDay)
         .div(100);
+
       expect(calculate).to.equal(expectedInterest);
     });
 

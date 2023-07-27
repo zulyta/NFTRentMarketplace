@@ -58,6 +58,7 @@ describe('NFT_v2_2 testing', function () {
         tx.data.lateReturnInterestPerDay
       );
       expect(car.isRented).to.equal(false);
+      expect(car.isReadyForReturn).to.equal(false);
     });
 
     it('Should get car details by tokenId', async function () {
@@ -74,6 +75,7 @@ describe('NFT_v2_2 testing', function () {
         tx.data.lateReturnInterestPerDay
       );
       expect(car.isRented).to.equal(false);
+      expect(car.isReadyForReturn).to.equal(false);
     });
 
     it('Should revert when tokenId does not exist', async function () {
