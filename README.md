@@ -29,45 +29,45 @@ git clone https://github.com/zulyta/NFTRentMarketplace.git
 ```
 2. Ubicarte en el branch main y luego instalar los paquetes de NPM
 
-  $ npm install
+  ```bash $ npm install```
 
 3. Abrir un terminal en la carpeta raíz. Correr el siguiente comando y verificar errores:
 
-  $ npx hardhat compile
+  ```bash $ npx hardhat compile ```
 
 4. Crear archivo de Secrets para desplegar los Smart Contracts .env duplicando el archivo .env-sample
 
-  $ cp .env-sample .env
+  ```bash$ cp .env-sample .env```
   
 5. Rellenar las claves del archivo .env
-```bash
-ADMIN_ACCOUNT_PRIVATE_KEY=
-MUMBAI_TESNET_URL=
-GOERLI_TESNET_URL=
-ETHERSCAN_API_KEY=
-POLYGONSCAN_API_KEY=
-
-# Contracts
-RELAYER_ADDRESS_GOERLI=
-GNOSIS_SAFE_ADDRESS_GOERLI=
-
-```
+    ```bash
+    ADMIN_ACCOUNT_PRIVATE_KEY=
+    MUMBAI_TESNET_URL=
+    GOERLI_TESNET_URL=
+    ETHERSCAN_API_KEY=
+    POLYGONSCAN_API_KEY=
+    
+    # Contracts
+    RELAYER_ADDRESS_GOERLI=
+    GNOSIS_SAFE_ADDRESS_GOERLI=
+    
+    ```
 6. Ejecutar los tests, utiliza el siguiente comando
-```bash
-// Contrato NFT
-npx hardhat test test/NFT_v2_2.test.js
-
-// Contrato RentCar
-npx hardhat test test/RentCar_v2_2.test.js
-```
+    ```bash
+    // Contrato NFT
+    npx hardhat test test/NFT_v2_2.test.js
+    
+    // Contrato RentCar
+    npx hardhat test test/RentCar_v2_2.test.js
+    ```
 7. Despliega los Smart Contracts
-```bash
-// Contrato NFT
-npx hardhat run scripts/deploy-nft-goerli.js --network goerli
-
-// Contrato RentCar
-npx hardhat run scripts/deploy-rentcar-goerli.js --network goerli
-```
+    ```bash
+    // Contrato NFT
+    npx hardhat run scripts/deploy-nft-goerli.js --network goerli
+    
+    // Contrato RentCar
+    npx hardhat run scripts/deploy-rentcar-goerli.js --network goerli
+    ```
 8. Agregar los Address en el archivo .env
    ```bash
    NFT_PROXY_ADDRESS_GOERLI=
