@@ -96,8 +96,8 @@ git clone https://github.com/zulyta/NFTRentMarketplace.git
       
 ## Contacto 
 Para dudas y sugerencias contactar con:  
- - Rolando Marzano Email: rolomarzano@gmail.com
- - Luz Ticona Email: luzta48@gmail.com
+ - Rolando Marzano - Email: rolomarzano@gmail.com
+ - Luz Ticona - Email: luzta48@gmail.com
  
 
 
