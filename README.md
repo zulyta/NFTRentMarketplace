@@ -9,12 +9,12 @@ El contrato RentCar permitirá a los arrendatarios buscar autos disponibles seg�
 
 El proyecto tiene como objetivo brindar un Marketplace descentralizado y seguro para alquiler de autos, donde los propietarios y arrendatarios puedan interactuar y realizar transacciones transparentes y confiables utilizando la tecnología blockchain y los contratos inteligentes.
 ## Estructura
-![image](![image](https://github.com/zulyta/NFTRentMarketplace/assets/32932810/d28b9975-687a-4f2d-9d75-13d430420451)
-)
+![Captura de pantalla 2023-07-27 180631](https://github.com/zulyta/NFTRentMarketplace/assets/32932810/e1374374-1852-4815-a757-8250f119c29c)
 
 ## Diagramas UML
 ### Diagrama de Secuencia
-![Dsecuencia](https://www.plantuml.com/plantuml/png/ZLN1RXCn4BtlLumg8S411DSSKAkWdYXKfU8KgPhOiyN2QozZRqNvfnuGdv0VOxnUf-icJNfB9c_cpRoPvvo6Y1o7pZODgkWPJYxPzuOaQZneid0sH7y26A1__A5WpvZ9QKonZC4Sg42V1jhypRKka7zIx2qg6k5w8ETlkiTeq_J8qIZJeujmSixUHIauWjlfImrPIf0nUlXoVZt2r1IuSMry1df5BYwHQpXBK25B1pC1tdxSqYvWoOGCJBScH4u30OesAoSa26X_3SOIDmKlkLKl9L_wX363x9ZVp44rOO8g9jH2ylgI1rfZOXMq2wYKsVnpRog-7JqNS9t0BR79p6YXhnSy3Q5yvw7Voz4qyxNMBNuZIuBo3XbQKZ_IKkcm64Nf1NnTos_4OmUIPqBldLbR2Yj7BkdJ4syUlFOGjZJQDqyBrHrzbksWBkkfwxvea9IsdwHUP-c-Pv8yk8TRP7Hnyu1PrfTLMQ9LWqMMS8Xv8KMzbPkF3GTgpezqfmoeJ27AxSsTQxA0xyIcDGh7pGFzDY8XLlKEY2WEQmrtKx8cwF6sQkROHLnbSo63HY6kKtUxtt_oPshe9aax4wPMB7nu_shbqeUiTFGHRKLmT5kLcxHfIN3AuChjTrLjxMUQNMvxnDosncO7zdHDExQUkJVD21Oh1vSzLkhN1IzyrZrx9ak2MZxUZmG-7RlHVcxDrcJzgaV_q6DnoLvH6AsfwSxR8JTNv3fo6qSElnmk15Ei0apHi_D03jQYQNxkjKcEeZIPnVne0OM8QqlAQ3nCK_oQA3g9USXgP-yR1CoZtH5B_RH216j2zFdDBmrfscOS-CDHavsa4XDQymUtkdathv46L1YyP31JUkuqlZiYvmMoclQTpqTA3sJbs_tioMoQKwamTBRv3m00)
+![Diagrama e secuenca PF 07](https://github.com/zulyta/NFTRentMarketplace/assets/32932810/77726145-4126-43fd-bfa8-51bf32113099)
+
 
 ## Getting Started 
 ### Requerimientos
