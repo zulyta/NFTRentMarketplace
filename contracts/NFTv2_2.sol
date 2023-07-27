@@ -88,7 +88,7 @@ contract NFTv2_2 is
         uint256 rentalPricePerDay,
         uint256 rentalGuarantee,
         uint256 lateReturnInterestPerDay
-    ) public onlyRole(MINTER_ROLE) {
+    ) public {
         require(rentalPricePerDay > 0, "Precio de alquiler no puede ser cero");
         require(rentalGuarantee > 0, "Garantia de alquiler no puede ser cero");
 

@@ -348,6 +348,12 @@ contract RentCarV2_2 is
         return _rentalIdCounter.current();
     }
 
+    // @dev Función para retirar los fondos del contrato
+    // @notice Solo puede ser ejecutada por el administrador
+    function withdrawFunds() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        payable(msg.sender).transfer(address(this).balance);
+    }
+
     // @dev Función para pausar el contrato
     // @notice Las funciones pause() y unpause() solo pueden ser ejecutada por los poseedores del rol PAUSER_ROLE
     function pause() public onlyRole(PAUSER_ROLE) {

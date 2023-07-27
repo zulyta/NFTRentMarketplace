@@ -11,19 +11,19 @@ async function deployNftGoerli() {
   let nftContract = await deploySC('NFTv2_2', []);
   let implementation = await printAddress('NFTv2_2', nftContract.address);
 
-  await ex(
-    nftContract,
-    'grantRole',
-    [MINTER_ROLE, relayerAddress],
-    'Error granting MINTER_ROLE'
-  );
+  // await ex(
+  //   nftContract,
+  //   'grantRole',
+  //   [MINTER_ROLE, relayerAddress],
+  //   'Error granting MINTER_ROLE'
+  // );
 
-  await ex(
-    nftContract,
-    'grantRole',
-    [BURNER_ROLE, relayerAddress],
-    'Error granting BURNER_ROLE'
-  );
+  // await ex(
+  //   nftContract,
+  //   'grantRole',
+  //   [BURNER_ROLE, relayerAddress],
+  //   'Error granting BURNER_ROLE'
+  // );
 
   await ex(
     nftContract,

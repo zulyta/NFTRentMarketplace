@@ -8,10 +8,11 @@ var gnosisSafe = process.env.GNOSIS_SAFE_ADDRESS_GOERLI;
 async function deployRentCarGoerli() {
   let relayerAddress = process.env.RELAYER_ADDRESS_GOERLI;
   let nftContractAddress = process.env.NFT_PROXY_ADDRESS_GOERLI;
+  let marketplaceOwner = process.env.MARKETPLACE_OWNER_ADDRESS_GOERLI;
 
   let rentCarContract = await deploySC('RentCarV2_2', [
     nftContractAddress,
-    relayerAddress,
+    marketplaceOwner,
   ]);
   let implementation = await printAddress(
     'RentCarV2_2',
@@ -22,6 +23,13 @@ async function deployRentCarGoerli() {
     rentCarContract,
     'grantRole',
     [PAUSER_ROLE, relayerAddress],
+    'Error granting PAUSER_ROLE'
+  );
+
+  await ex(
+    rentCarContract,
+    'grantRole',
+    [PAUSER_ROLE, gnosisSafe],
     'Error granting PAUSER_ROLE'
   );
 
