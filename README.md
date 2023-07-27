@@ -29,15 +29,15 @@ git clone https://github.com/zulyta/NFTRentMarketplace.git
 ```
 2. Ubicarte en el branch main y luego instalar los paquetes de NPM
 
-  ```bash $ npm install```
+  ```npm install```
 
 3. Abrir un terminal en la carpeta raíz. Correr el siguiente comando y verificar errores:
 
-  ```bash $ npx hardhat compile ```
+  ```npx hardhat compile ```
 
 4. Crear archivo de Secrets para desplegar los Smart Contracts .env duplicando el archivo .env-sample
 
-  ```bash$ cp .env-sample .env```
+  ``` cp .env-sample .env```
   
 5. Rellenar las claves del archivo .env
     ```bash
@@ -73,7 +73,8 @@ git clone https://github.com/zulyta/NFTRentMarketplace.git
    NFT_PROXY_ADDRESS_GOERLI=
    RENTCAR_PROXY_ADDRESS_GOERLI=
    ```
-9. Ejecutar la aplicacion en localmente,  ingresa a cd front-end, rellena las claves del archivo secrets .env duplicando el archivo .env-sample
+9. Ejecutar la aplicacion en localmente,  ingresa a ```cd front-end```, rellena las claves del archivo secrets ```.env``` duplicando el archivo ```.env-sample```
+    
   ```bash
   NUXT_INFURA_API_KEY=
   NUXT_INFURA_API_KEY_SECRET=
@@ -91,12 +92,12 @@ git clone https://github.com/zulyta/NFTRentMarketplace.git
 
   ```
 10. Iniciar la aplicación utilizando estos comandos
-    ```bash
-     //1.
-    yarn install
-    //2.
-    yarn dev
-     ```
+   
+     1.
+    ```yarn install```
+    2.
+   ```yarn dev ```
+      
 ## Contacto 
 Para dudas y sugerencias contactar con : 
   Rolando Marzano Email: rolomarzano@gmail.com
