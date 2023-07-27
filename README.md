@@ -91,17 +91,12 @@ git clone https://github.com/zulyta/NFTRentMarketplace.git
   NUXT_RENTCAR_PROXY_ADDRESS_GOERLI=
 
   ```
-10. Iniciar la aplicación utilizando estos comandos
-   
-     1.
-    ```yarn install```
-    2.
-   ```yarn dev ```
+10. Iniciar la aplicación utilizando estos comandos  ```yarn install``` y  ```yarn dev ```
       
 ## Contacto 
-Para dudas y sugerencias contactar con : 
-  Rolando Marzano Email: rolomarzano@gmail.com
-  Luz Ticona Email: luzta48@gmail.com
+Para dudas y sugerencias contactar con:  
+ - Rolando Marzano Email: rolomarzano@gmail.com
+ - Luz Ticona Email: luzta48@gmail.com
  
 
 
