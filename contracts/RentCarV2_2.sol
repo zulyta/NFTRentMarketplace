@@ -284,15 +284,15 @@ contract RentCarV2_2 is
     // @dev Función pública de solo lectura para calcular la cantidad de garantía a devolver al arrendatario al finalizar el alquiler.
     // @param rentalId El ID único del alquiler para el cual se quiere calcular la cantidad de garantía a devolver.
     // @return La cantidad de garantía a devolver al arrendatario.
-    function calculateReturnGarantee(
-        uint256 rentalId
-    ) public view rentalExists(rentalId) returns (uint256) {
-        uint256 interest = calculateReturnInterest(rentalId);
-        return
-            _rentals[rentalId].totalInterest > interest
-                ? _rentals[rentalId].totalInterest.sub(interest)
-                : 0;
-    }
+    // function calculateReturnGarantee(
+    //     uint256 rentalId
+    // ) public view rentalExists(rentalId) returns (uint256) {
+    //     uint256 interest = calculateReturnInterest(rentalId);
+    //     return
+    //         _rentals[rentalId].totalInterest > interest
+    //             ? _rentals[rentalId].totalInterest.sub(interest)
+    //             : 0;
+    // }
 
     // @dev Función pública para que el arrendatario del carro retire la garantía del alquiler.
     // @param rentalId El ID único del alquiler para el cual se quiere retirar la garantía.
