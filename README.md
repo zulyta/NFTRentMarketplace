@@ -14,12 +14,6 @@ El proyecto tiene como objetivo brindar un Marketplace descentralizado y seguro 
 
 ![Captura de pantalla 2023-07-27 180631](https://github.com/zulyta/NFTRentMarketplace/assets/32932810/e1374374-1852-4815-a757-8250f119c29c)
 
-## Diagramas UML
-
-### Diagrama de Secuencia
-
-![Diagrama e secuenca PF 07](https://github.com/zulyta/NFTRentMarketplace/assets/32932810/77726145-4126-43fd-bfa8-51bf32113099)
-
 ## Getting Started
 
 ### Requerimientos
